@@ -2,6 +2,13 @@
 // javascript Presidential Word Guess game
 // ---------------------------------------------------------
 
+var playerNameElement = document.getElementById("player-name");
+var playerLetterElement = document.getElementById("player-letter");
+var lettersUsedElement = document.getElementById("letters-used");
+var wordDisplayElement = document.getElementById("word-display");
+var guessCountElement = document.getElementById("guess-count");
+var winCountElement = document.getElementById("win-count");
+var lossCountElement = document.getElementById("loss-count");
 // ----------------------------------------------------------
 // object for session
 // ----------------------------------------------------------
@@ -35,7 +42,7 @@ var session =  {
 };
 
 // ----------------------------------------------------------
-// object for pool of word
+// object for pool of words
 // ----------------------------------------------------------
 var wordPool = {
   masterWordList: ["WASHINGTON","JOHN ADAMS","JEFFERSON","MADISON","MONROE","JOHN Q ADAMS","JACKSON","VAN BUREN","WILLIAM HARRISON",
@@ -81,51 +88,47 @@ var wordPool = {
 // object for user interface - i.e. the html page elements
 // ----------------------------------------------------------
 var userInterface = {
-// properties to be determined later - need more understanding how
-// on page elements will be manipulated during game play first
-  usedLetters: [],
 
-  // clear word element
-  clearWordElement: function() {
-    console.log("in userInterface.clearWordElement");  
-    // this is will clear the on page word / letter elements
-    // i think this will mean hidding all the letters
-    // due to time constraints i might have a fixed number of letter
-    // elements or maybe i will have a "diplay word" that has dashes for
-    // unreveiled letters - TBD
-  },
-
-  // clear picked letter element
-  clearUsedLetters: function() {
-    console.log("in userInterface.clearUsedLetters");  
-    this.usedLetters.splice(0,this.usedLetters.length);
-    // this is where the on page element of picked letters will be reset
-    // how this looks is TBD      
-    },
-   
-
-  // add a letter to the picked letter list
-  // starting to think this belongs in the game object 
-  // and should be replaced here with just a method
-  // that updates what word is shown on screen - not sure yet
-  addLetterToUsedList: function(letter) {
-    console.log("in userInterface.addLetterToUsedList"); 
-    this.usedLetters.push(letter); 
-    // this is where list of letters already used will be added to 
-    // caller sends one letter to add to list
+  // initialize the display
+  initDisplay: function() {
+    console.log("in userInterface.initDisplay");
+    playerNameElement.textContent = "Hello " + session.playerName;
+    userInterface.displayWordElement();
+    userInterface.displayUsedLettersElement();
+    userInterface.displayGuessRemainingElement();
+    userInterface.displayWinCountElement();
+    userInterface.displayLossCountElement();
   },  
 
-  // find all occurance of letter in game word and reveal it on page
-  // starting to think this belongs in the game object 
-  // and should be replaced here with just a method
-  // that updates what word is shown on screen - not sure yet
-  showLetter: function(letter) {
-    console.log("in userInterface.showLetter"); 
-    // this is where letter in the on page word element will be 
-    // changed to be visable - function will have to find all
-    // ocuurances in the word 
-    // caller sends one letter to add to list
-  }
+  // display word element
+  displayWordElement: function() {
+    console.log("in userInterface.displayWordElement"); 
+    wordDisplayElement.textContent = "Word: " + game.getDisplayableGameWord(); 
+  },
+
+  // display used letters element
+  displayUsedLettersElement: function() {
+    console.log("in userInterface.displayUsedLettersElement"); 
+    lettersUsedElement.textContent = "Letters used: " + game.getDisplayableUsedLetterList();
+  },
+
+  // display guess remaining element
+  displayGuessRemainingElement: function() {
+    console.log("in userInterface.displayGuessRemainingElement"); 
+    guessCountElement.textContent = "Guesses Remaining: " + game.guessesRemaining;
+  },
+
+  // display guess remaining element
+  displayWinCountElement: function() {
+    console.log("in userInterface.displayWinCountElement"); 
+    winCountElement.textContent = "Wins: " + session.wins;
+  },
+
+  // display guess remaining element
+  displayLossCountElement: function() {
+    console.log("in userInterface.displayLossCountElement"); 
+    lossCountElement.textContent = "Loses: " + session.losses;
+}
 };
 
 
@@ -147,12 +150,13 @@ var game = {
   gameWordArray: [],
   gameWordLetterStatusArray: [],
   gameDisplayWord: "",
+  usedLetters: [],
 
   // set up the game word and its support arrays for play
   initGameWord: function() {
     console.log("game.initGameWord");
-    // this.gameWordString = wordPool.getWordFromPool();
-    this.gameWordString = "GEORGE W BUSH";
+    this.gameWordString = wordPool.getWordFromPool();
+    // this.gameWordString = "GEORGE W BUSH";
     this.gameWordArray = this.gameWordString.split('');
     console.log("this is the game word: " + this.gameWordString);
     this.gameWordArray.forEach(element => {
@@ -174,7 +178,30 @@ var game = {
   // get formatted game word for use on page display
   getDisplayableGameWord: function() {
     return this.gameWordLetterStatusArray.join('');
+  },
+
+  // clear picked letter array
+  clearUsedLetters: function() {
+    console.log("in game.clearUsedLetters");  
+    this.usedLetters.splice(0,this.usedLetters.length);
+  },
+   
+
+  // add a letter to the picked letter list
+  addLetterToUsedList: function(letter) {
+    console.log("in game.addLetterToUsedList"); 
+    this.usedLetters.push(letter); 
+    // this is where list of letters already used will be added to 
+    // caller sends one letter to add to list
+  },  
+
+  // get formatted game word for use on page display
+  getDisplayableUsedLetterList: function() {
+    console.log("in game.getDisplableUsedLetterList"); 
+    var displayableUsedLetters = this.usedLetters.sort();
+    return displayableUsedLetters.join('');
   }
+
 };
   
 
@@ -185,6 +212,7 @@ var game = {
 session.beginSession();
 wordPool.initWordPool();
 game.initGameWord();
+userInterface.initDisplay();
 console.log("this is the current displayable game word: " + game.getDisplayableGameWord());
 
 
@@ -207,27 +235,30 @@ wordPool.availableWords.forEach(element => {
   console.log("available list: " + element);
 }); 
 
-userInterface.clearWordElement();
+userInterface.displayWordElement();
 // show used letter list
-userInterface.usedLetters.forEach(element => {
+game.usedLetters.forEach(element => {
   console.log(element)
 });
+console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
 // add some letters to used letter list
-userInterface.addLetterToUsedList('Q');
-userInterface.addLetterToUsedList('R');
-userInterface.addLetterToUsedList('A');
+game.addLetterToUsedList('Q');
+game.addLetterToUsedList('R');
+game.addLetterToUsedList('A');
 // show used letter list
-userInterface.usedLetters.forEach(element => {
+game.usedLetters.forEach(element => {
   console.log(element)
 });
+console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
+userInterface.displayUsedLettersElement();
 // clear used letter list
-userInterface.clearUsedLetters();
+game.clearUsedLetters();
 // show used letter list
-userInterface.usedLetters.forEach(element => {
+game.usedLetters.forEach(element => {
   console.log(element)
 });
+console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
 
-userInterface.showLetter();
 
 
 // ----------------------------------------------------------
