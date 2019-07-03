@@ -19,7 +19,7 @@ javascript Presidential Word Guess game
  
 #game {
   position: relative;
-  top: 400px;
+  top: 410px;
   left: 0px;
 }
 
@@ -33,6 +33,6 @@ p {
   border: 1px solid #b22234;
   padding: 3px;
   margin: 3px;
-  width: 300px;
+  width: 200px;
 
 }

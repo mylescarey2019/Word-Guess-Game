@@ -2,7 +2,7 @@
 // javascript Presidential Word Guess game
 // ---------------------------------------------------------
 
-var playerNameElement = document.getElementById("player-name");
+var messageElement = document.getElementById("message");
 var playerLetterElement = document.getElementById("player-letter");
 var lettersUsedElement = document.getElementById("letters-used");
 var wordDisplayElement = document.getElementById("word-display");
@@ -22,7 +22,7 @@ var session =  {
   // begin the session
   beginSession: function() {
     console.log("in session.beginSession");
-    this.playerName = prompt("What is your name?");
+    // this.playerName = prompt("What is your name?");
     // call wordPool.init()
   },
 
@@ -37,6 +37,11 @@ var session =  {
   endSession: function() {
     console.log("in session.endSession");
     // this is were we display final stats and end the session
+  },
+
+  // update session information following a game end
+  updateSession: function() {
+    console.log("in session.updateSession"); 
   }
 
 };
@@ -92,13 +97,19 @@ var userInterface = {
   // initialize the display
   initDisplay: function() {
     console.log("in userInterface.initDisplay");
-    playerNameElement.textContent = "Hello " + session.playerName;
+    userInterface.displayMessageElement("Hello, let's play");
     userInterface.displayWordElement();
     userInterface.displayUsedLettersElement();
     userInterface.displayGuessRemainingElement();
     userInterface.displayWinCountElement();
     userInterface.displayLossCountElement();
   },  
+
+  // display message element
+  displayMessageElement: function(message) {
+    console.log("in userInterface.displayMessageElement"); 
+    messageElement.textContent = message; 
+  },
 
   // display word element
   displayWordElement: function() {
@@ -128,7 +139,15 @@ var userInterface = {
   displayLossCountElement: function() {
     console.log("in userInterface.displayLossCountElement"); 
     lossCountElement.textContent = "Loses: " + session.losses;
-}
+  },
+
+  // update the word, used letters and guess count on display
+  updateGameDisplay: function() {
+    console.log("in userInterface.updateGameDisplay"); 
+    userInterface.displayWordElement();
+    userInterface.displayUsedLettersElement();
+    userInterface.displayGuessRemainingElement();
+  }
 };
 
 
@@ -155,8 +174,8 @@ var game = {
   // set up the game word and its support arrays for play
   initGameWord: function() {
     console.log("game.initGameWord");
-    this.gameWordString = wordPool.getWordFromPool();
-    // this.gameWordString = "GEORGE W BUSH";
+    // this.gameWordString = wordPool.getWordFromPool();
+    this.gameWordString = "GEORGE W BUSH";
     this.gameWordArray = this.gameWordString.split('');
     console.log("this is the game word: " + this.gameWordString);
     this.gameWordArray.forEach(element => {
@@ -177,6 +196,7 @@ var game = {
   
   // get formatted game word for use on page display
   getDisplayableGameWord: function() {
+    console.log("in game.getDisplaybleGameWord"); 
     return this.gameWordLetterStatusArray.join('');
   },
 
@@ -200,7 +220,33 @@ var game = {
     console.log("in game.getDisplableUsedLetterList"); 
     var displayableUsedLetters = this.usedLetters.sort();
     return displayableUsedLetters.join('');
+  },
+
+  // check the picked letter for validity and hit/miss against the word
+  checkPickedLetter: function(letter) {
+    console.log("in game.checkPickedLetter"); 
+  },
+
+  // check the picked letter for validity and hit/miss against the word
+  checkPickedLetter: function(letter) {
+    console.log("in game.checkPickedLetter"); 
+  },
+
+  // apply results of finding letter in the word
+  processLetterHit: function(letter) {
+    console.log("in game.processLetterHit"); 
+  },
+
+  // apply results of not finding letter in the word
+  processLetterMiss: function(letter) {
+    console.log("in game.processLetterMiss"); 
+  },  
+
+  // determine if game is won, lost or continuing
+  checkGameState: function() {
+    console.log("in game.checkGameState"); 
   }
+
 
 };
   
@@ -242,14 +288,32 @@ game.usedLetters.forEach(element => {
 });
 console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
 // add some letters to used letter list
-game.addLetterToUsedList('Q');
-game.addLetterToUsedList('R');
-game.addLetterToUsedList('A');
+game.addLetterToUsedList('G');
+game.addLetterToUsedList('O');
+game.addLetterToUsedList('S');
 // show used letter list
 game.usedLetters.forEach(element => {
   console.log(element)
 });
 console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
+// check letter picked
+game.checkPickedLetter('G');
+game.checkPickedLetter('=');
+game.checkPickedLetter('Y');
+game.checkPickedLetter('B');
+game.checkPickedLetter('7');
+game.checkPickedLetter('/'); 
+// process a hit
+game.processLetterHit('U');
+// process a miss
+game.processLetterMiss('K');
+// update the game display
+userInterface.updateGameDisplay();
+// check the game state
+game.checkGameState();
+// update the session condition
+session.updateSession();
+
 userInterface.displayUsedLettersElement();
 // clear used letter list
 game.clearUsedLetters();
