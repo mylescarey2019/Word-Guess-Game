@@ -1,10 +1,6 @@
-// javascript for Word Guess game
-//
 // ---------------------------------------------------------
-
-// Creates an array that lists out all of the options (Rock, Paper,Scissors, spocK,
-    // Lizard).
-var validTurnChoices = ["r", "p", "s","k","l"];
+// javascript Presidential Word Guess game
+// ---------------------------------------------------------
 
 // ----------------------------------------------------------
 // object for session
@@ -42,16 +38,22 @@ var session =  {
 // object for pool of word
 // ----------------------------------------------------------
 var wordPool = {
-  masterWordList: ["WASHINGTON","JOHNADAMS","JEFFERSON","MADISON","MONROE","JOHNQADAMS","JACKSON","VAN BUREN","WILLIAMHARRISON",
-  "TYLER","POLK","TAYLOR","FILLMORE","PIERCE","BUCHANAN","LINCOLN","ANDREWJOHNSON","GRANT","HAYES","GARFIELD", 
-  "ARTHUR","CLEVELAND","BENJAMINHARRISON","MCKINLEY","ROOSEVELT","TAFT","WILSON","HARDING","COOLIDGE","HOOVER",
-  "ROOSEVELT","TRUMAN","EISENHOWER","KENNEDY","LYNDONJOHNSON","NIXON","FORD","CARTER","REAGAN","GEORGEBUSH",
-  "CLINTON","GEORGEBUSH","OBAMA","TRUMP"],
-  availableWords: ["WASHINGTON","JOHNADAMS","JEFFERSON","MADISON","MONROE","JOHNQADAMS","JACKSON","VAN BUREN","WILLIAMHARRISON",
-  "TYLER","POLK","TAYLOR","FILLMORE","PIERCE","BUCHANAN","LINCOLN","ANDREWJOHNSON","GRANT","HAYES","GARFIELD", 
-  "ARTHUR","CLEVELAND","BENJAMINHARRISON","MCKINLEY","ROOSEVELT","TAFT","WILSON","HARDING","COOLIDGE","HOOVER",
-  "ROOSEVELT","TRUMAN","EISENHOWER","KENNEDY","LYNDONJOHNSON","NIXON","FORD","CARTER","REAGAN","GEORGEBUSH",
-  "CLINTON","GEORGEBUSH","OBAMA","TRUMP"],
+  masterWordList: ["WASHINGTON","JOHN ADAMS","JEFFERSON","MADISON","MONROE","JOHN Q ADAMS","JACKSON","VAN BUREN","WILLIAM HARRISON",
+  "TYLER","POLK","TAYLOR","FILLMORE","PIERCE","BUCHANAN","LINCOLN","ANDREW JOHNSON","GRANT","HAYES","GARFIELD", 
+  "ARTHUR","CLEVELAND","BENJAMIN HARRISON","MCKINLEY","ROOSEVELT","TAFT","WILSON","HARDING","COOLIDGE","HOOVER",
+  "ROOSEVELT","TRUMAN","EISENHOWER","KENNEDY","LYNDON JOHNSON","NIXON","FORD","CARTER","REAGAN","GEORGE BUSH",
+  "CLINTON","GEORGE W BUSH","OBAMA","TRUMP"],
+  availableWords: [],
+
+  // initialize the available word list from master list
+  initWordPool: function() {
+    console.log("in wordPool.initWordPool");  
+    // clear available word list then reload from master list
+    this.availableWords.splice(0,this.availableWords.length);
+    this.masterWordList.forEach(element => {
+      this.availableWords.push(element);
+    });
+  },
 
   // is word available 
   isWordAvailable: function() {
@@ -67,8 +69,11 @@ var wordPool = {
   // get a word 
   getWordFromPool: function() {
     console.log("in wordPool.getWordFromPool");  
-    // this is were a word will randoml be taken from available pool
-    // removed available and returned to caller 
+    // randomly pick new word from available word list then remove it from the list and 
+    // return it to the caller
+    var nextWordToPlay = this.availableWords[Math.floor(Math.random() * this.availableWords.length)];
+    this.availableWords.splice(this.availableWords.indexOf(nextWordToPlay),1);
+    return nextWordToPlay;
   }
 };
 
@@ -137,12 +142,40 @@ var userInterface = {
 var game = {
   // properties to be determined later - need more understanding how
   // on page elements will be manipulated during game play first
-    
-    // placeholder
-    placeholder: function() {
-      console.log("in game.placeholder");  
-    }
+  guessesRemaining: 6,
+  gameWordString: "",
+  gameWordArray: [],
+  gameWordLetterStatusArray: [],
+  gameDisplayWord: "",
+
+  // set up the game word and its support arrays for play
+  initGameWord: function() {
+    console.log("game.initGameWord");
+    // this.gameWordString = wordPool.getWordFromPool();
+    this.gameWordString = "GEORGE W BUSH";
+    this.gameWordArray = this.gameWordString.split('');
+    console.log("this is the game word: " + this.gameWordString);
+    this.gameWordArray.forEach(element => {
+      console.log("game word array elements: " + element);
+    });
+    this.gameWordArray.forEach(element => {
+      if (element === " ") {
+        this.gameWordLetterStatusArray.push(" ");
+      }
+      else {
+        this.gameWordLetterStatusArray.push("-");
+      }
+    });
+    this.gameWordLetterStatusArray.forEach(element => {
+      console.log("game word status array elements: " + element);
+    });  
+  },
+  
+  // get formatted game word for use on page display
+  getDisplayableGameWord: function() {
+    return this.gameWordLetterStatusArray.join('');
   }
+};
   
 
 
@@ -150,18 +183,30 @@ var game = {
 //  *** Start of game flow *** 
 // -------------------------------------------------------------------
 session.beginSession();
-game.placeholder();
+wordPool.initWordPool();
+game.initGameWord();
+console.log("this is the current displayable game word: " + game.getDisplayableGameWord());
 
-wordPool.masterWordList.forEach(element => {
-  console.log(element);
-});  
-
-console.log("words remaining: " + wordPool.isWordAvailable());
 
 // ----------------------------------------------------------
 // this is a section to simply validate each method as it is coded
 // if appropriate call location is not yet known
-wordPool.getWordFromPool();
+wordPool.masterWordList.forEach(element => {
+  console.log("master list: " + element);
+});  
+
+wordPool.availableWords.forEach(element => {
+  console.log("available list: " + element);
+}); 
+console.log("words remaining: " + wordPool.isWordAvailable());
+for (i=0;i<wordPool.masterWordList.length;i++) {
+  console.log("this is the word from word pool: " + wordPool.getWordFromPool());
+};
+console.log("words remaining: " + wordPool.isWordAvailable());
+wordPool.availableWords.forEach(element => {
+  console.log("available list: " + element);
+}); 
+
 userInterface.clearWordElement();
 // show used letter list
 userInterface.usedLetters.forEach(element => {
