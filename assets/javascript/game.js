@@ -26,22 +26,28 @@ var session =  {
     // call wordPool.init()
   },
 
-  // record game results
-  recordGameResults: function() {
-    console.log("in session.recordGameResults");
-    // this is were we save the game results 
-    // into wins, loses, wordsWon/Lost
+
+  // update session information following a game end
+  recordGameResultInSession: function(word,result) {
+  // this is were we save the game results 
+  // into wins, loses, wordsWon/Lost  
+    console.log("in session.recordGameResultInSession"); 
+    if (result === "win") {
+      session.wins++;
+      session.wordsWon.push(word);
+      userInterface.displayWinCountElement();
+    }
+    else {
+      session.losses++;
+      session.wordsLost.push(word);
+      userInterface.displayLossCountElement();
+    };
   },
 
   // end session
   endSession: function() {
     console.log("in session.endSession");
     // this is were we display final stats and end the session
-  },
-
-  // update session information following a game end
-  updateSession: function() {
-    console.log("in session.updateSession"); 
   }
 
 };
@@ -129,13 +135,13 @@ var userInterface = {
     guessCountElement.textContent = "Guesses Remaining: " + game.guessesRemaining;
   },
 
-  // display guess remaining element
+  // display wins element
   displayWinCountElement: function() {
     console.log("in userInterface.displayWinCountElement"); 
     winCountElement.textContent = "Wins: " + session.wins;
   },
 
-  // display guess remaining element
+  // display losses element
   displayLossCountElement: function() {
     console.log("in userInterface.displayLossCountElement"); 
     lossCountElement.textContent = "Loses: " + session.losses;
@@ -147,6 +153,25 @@ var userInterface = {
     userInterface.displayWordElement();
     userInterface.displayUsedLettersElement();
     userInterface.displayGuessRemainingElement();
+  },
+
+  // diagnostic output to console
+  diagnosticDump: function() {
+    console.log("------------------------")
+    console.log("in userInterface.diagnosticDump"); 
+    console.log("word: " + game.getDisplayableGameWord());
+    console.log("used letters: " + game.getDisplayableUsedLetterList());
+    console.log("guess remaining: " + game.guessesRemaining);
+    console.log("game state: " + game.checkGameState());
+    console.log("wins: " + session.wins);
+    console.log("losses: " + session.losses);
+    session.wordsWon.forEach(element => {
+      console.log("word won: " + element);
+    });
+    session.wordsLost.forEach(element => {
+      console.log("word lost: " + element);
+    });
+    console.log("------------------------")
   }
 };
 
@@ -164,12 +189,15 @@ var userInterface = {
 var game = {
   // properties to be determined later - need more understanding how
   // on page elements will be manipulated during game play first
-  guessesRemaining: 6,
+  guessesRemaining: 12,
   gameWordString: "",
   gameWordArray: [],
   gameWordLetterStatusArray: [],
   gameDisplayWord: "",
   usedLetters: [],
+  // there is a better way than this to check for a-z but finding it yet
+  alphaLetters: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N',
+                  'O','P','Q','R','S','T','U','V','W','X','Y','Z'],
 
   // set up the game word and its support arrays for play
   initGameWord: function() {
@@ -187,6 +215,7 @@ var game = {
       }
       else {
         this.gameWordLetterStatusArray.push("-");
+        // this.gameWordLetterStatusArray.push(element);  force the win state for testing
       }
     });
     this.gameWordLetterStatusArray.forEach(element => {
@@ -218,33 +247,79 @@ var game = {
   // get formatted game word for use on page display
   getDisplayableUsedLetterList: function() {
     console.log("in game.getDisplableUsedLetterList"); 
-    var displayableUsedLetters = this.usedLetters.sort();
+    // this alphabetizes the used letter this - not sure if I like it or not
+    // trying without for now
+    // var displayableUsedLetters = this.usedLetters.sort(); 
+    var displayableUsedLetters = this.usedLetters
     return displayableUsedLetters.join('');
   },
 
   // check the picked letter for validity and hit/miss against the word
   checkPickedLetter: function(letter) {
     console.log("in game.checkPickedLetter"); 
-  },
-
-  // check the picked letter for validity and hit/miss against the word
-  checkPickedLetter: function(letter) {
-    console.log("in game.checkPickedLetter"); 
+    // console.log("letter passed in is: " + letter);
+    // console.log("upper case version of it is : " + letter.toUpperCase());
+    var letterState = "";
+    if (letter === "=") {
+      letterState = "quit";
+    }
+      else if (this.usedLetters.indexOf(letter.toUpperCase()) >= 0)  {
+        letterState = "used";
+      }
+      else if (letter != " " && this.gameWordArray.indexOf(letter.toUpperCase()) >= 0) {
+        letterState = "hit";
+      }  
+      else if (this.alphaLetters.indexOf(letter.toUpperCase()) >= 0) {
+        letterState = "miss"
+      }
+      else {
+        letterState = "invalid"
+      };
+    return letterState;
   },
 
   // apply results of finding letter in the word
   processLetterHit: function(letter) {
     console.log("in game.processLetterHit"); 
+    for (i=0; i < this.gameWordArray.length; i++) {
+      if (this.gameWordArray[i] === letter) {
+        this.gameWordLetterStatusArray[i] = letter;
+      }
+    };
+    game.addLetterToUsedList(letter);
+    this.guessesRemaining--;
+    userInterface.updateGameDisplay();
   },
 
   // apply results of not finding letter in the word
   processLetterMiss: function(letter) {
     console.log("in game.processLetterMiss"); 
+    game.addLetterToUsedList(letter);
+    this.guessesRemaining--;
+    userInterface.updateGameDisplay();
   },  
 
-  // determine if game is won, lost or continuing
+  // determine if game is won, lost or continuing and return state to caller
   checkGameState: function() {
     console.log("in game.checkGameState"); 
+    var isUnrevealedLetters = true;
+    if (game.gameWordLetterStatusArray.indexOf('-') === -1) {
+      isUnrevealedLetters = false;
+    }
+    else {
+      isUnrevealedLetters = true;
+    };
+
+    if (isUnrevealedLetters && this.guessesRemaining === 0) {
+      return "loss";
+    } 
+      else if (isUnrevealedLetters && this.guessesRemaining > 0) {
+        return "in-progress";
+      } 
+      else { 
+        return "win";
+      };
+
   }
 
 
@@ -259,75 +334,94 @@ session.beginSession();
 wordPool.initWordPool();
 game.initGameWord();
 userInterface.initDisplay();
-console.log("this is the current displayable game word: " + game.getDisplayableGameWord());
-
-
-// ----------------------------------------------------------
-// this is a section to simply validate each method as it is coded
-// if appropriate call location is not yet known
-wordPool.masterWordList.forEach(element => {
-  console.log("master list: " + element);
-});  
-
-wordPool.availableWords.forEach(element => {
-  console.log("available list: " + element);
-}); 
-console.log("words remaining: " + wordPool.isWordAvailable());
-for (i=0;i<wordPool.masterWordList.length;i++) {
-  console.log("this is the word from word pool: " + wordPool.getWordFromPool());
-};
-console.log("words remaining: " + wordPool.isWordAvailable());
-wordPool.availableWords.forEach(element => {
-  console.log("available list: " + element);
-}); 
-
-userInterface.displayWordElement();
-// show used letter list
-game.usedLetters.forEach(element => {
-  console.log(element)
-});
-console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
-// add some letters to used letter list
-game.addLetterToUsedList('G');
-game.addLetterToUsedList('O');
-game.addLetterToUsedList('S');
-// show used letter list
-game.usedLetters.forEach(element => {
-  console.log(element)
-});
-console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
-// check letter picked
-game.checkPickedLetter('G');
-game.checkPickedLetter('=');
-game.checkPickedLetter('Y');
-game.checkPickedLetter('B');
-game.checkPickedLetter('7');
-game.checkPickedLetter('/'); 
-// process a hit
-game.processLetterHit('U');
-// process a miss
-game.processLetterMiss('K');
-// update the game display
-userInterface.updateGameDisplay();
-// check the game state
-game.checkGameState();
-// update the session condition
-session.updateSession();
-
-userInterface.displayUsedLettersElement();
-// clear used letter list
-game.clearUsedLetters();
-// show used letter list
-game.usedLetters.forEach(element => {
-  console.log(element)
-});
-console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
+userInterface.diagnosticDump();
 
 
 
-// ----------------------------------------------------------
-
-
-session.recordGameResults();
+// session.recordGameResultInSession();
 session.endSession();
+// ----------------------------------------------------------
+
+
+// // ----------------------------------------------------------
+// // this is a section to simply validate each method as it is coded
+// // if appropriate call location is not yet known
+// wordPool.masterWordList.forEach(element => {
+//   console.log("master list: " + element);
+// });  
+
+// wordPool.availableWords.forEach(element => {
+//   console.log("available list: " + element);
+// }); 
+// console.log("words remaining: " + wordPool.isWordAvailable());
+// for (i=0;i<wordPool.masterWordList.length;i++) {
+//   console.log("this is the word from word pool: " + wordPool.getWordFromPool());
+// };
+// console.log("words remaining: " + wordPool.isWordAvailable());
+// wordPool.availableWords.forEach(element => {
+//   console.log("available list: " + element);
+// }); 
+
+// userInterface.displayWordElement();
+// // show used letter list
+// game.usedLetters.forEach(element => {
+//   console.log(element)
+// });
+// console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
+// // add some letters to used letter list
+// // game.addLetterToUsedList('G');
+// // game.addLetterToUsedList('O');
+// // game.addLetterToUsedList('S');
+// // show used letter list
+// game.usedLetters.forEach(element => {
+//   console.log(element)
+// });
+// console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
+// game.gameWordArray.forEach(element => {
+//   console.log("game word array elements: " + element);
+// });
+// // check letter picked
+// console.log("letter G is: " + game.checkPickedLetter('G'));
+// console.log("letter = is: " + game.checkPickedLetter('='));
+// console.log("letter Y is: " + game.checkPickedLetter('Y'));
+// console.log("letter B is: " + game.checkPickedLetter('B'));
+// console.log("letter 7 is: " + game.checkPickedLetter('7'));
+// console.log("letter / is: " + game.checkPickedLetter('/'));
+// console.log("letter ' ' is: " + game.checkPickedLetter(' '));
+// console.log("letter g is: " + game.checkPickedLetter('g'));
+// console.log("letter y is: " + game.checkPickedLetter('y'));
+// console.log("letter b is: " + game.checkPickedLetter('b'));
+// userInterface.diagnosticDump();
+// // process a hit
+// game.processLetterHit('G');
+// game.processLetterHit('E');
+// game.processLetterHit('O');
+// game.processLetterHit('R');
+// userInterface.diagnosticDump();
+// // process a miss
+// game.processLetterMiss('K');
+// userInterface.diagnosticDump();
+// game.processLetterHit('U');
+// game.processLetterHit('B');
+// game.processLetterHit('S');
+// game.processLetterHit('H');
+// game.processLetterHit('W');
+// session.recordGameResultsInSession("GEORGE W BUSH","win");
+
+// userInterface.diagnosticDump();
+// // update the game display
+// userInterface.updateGameDisplay();
+
+// userInterface.displayUsedLettersElement();
+// // clear used letter list
+// game.clearUsedLetters();
+// // show used letter list
+// game.usedLetters.forEach(element => {
+//   console.log(element)
+// });
+// console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
+
+
+
+
 
