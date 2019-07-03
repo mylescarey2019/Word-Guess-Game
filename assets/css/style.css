@@ -1,0 +1,38 @@
+/* ---------------------------------------------------------
+javascript Presidential Word Guess game
+--------------------------------------------------------- */
+
+#main-div {
+  background-image: url(../images/pres1.jpg);
+  background-position: center; 
+  background-repeat: no-repeat; 
+  background-size: cover; 
+  margin: 0 auto;
+  padding: 0px;
+  width: 100%;
+  max-width: 678px;
+  /* height: auto; */
+  height: 592px;
+  border: 10px solid black;
+  
+}
+ 
+#game {
+  position: relative;
+  top: 400px;
+  left: 0px;
+}
+
+p {
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size:  14px;
+  text-align: left;
+  color: #ffffff;
+  background-color: #3c3b6e;
+  border: 1px solid #b22234;
+  padding: 3px;
+  margin: 3px;
+  width: 300px;
+
+}
