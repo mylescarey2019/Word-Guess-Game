@@ -117,6 +117,12 @@ var userInterface = {
     messageElement.textContent = message; 
   },
 
+  // display message element
+  displayPlayerLetterElement: function(message) {
+    console.log("in userInterface.displayPlayerLetterElement"); 
+    playerLetterElement.textContent = message; 
+  },
+
   // display word element
   displayWordElement: function() {
     console.log("in userInterface.displayWordElement"); 
@@ -202,8 +208,8 @@ var game = {
   // set up the game word and its support arrays for play
   initGameWord: function() {
     console.log("game.initGameWord");
-    // this.gameWordString = wordPool.getWordFromPool();
-    this.gameWordString = "GEORGE W BUSH";
+    this.gameWordString = wordPool.getWordFromPool();
+    // this.gameWordString = "GEORGE W BUSH";
     this.gameWordArray = this.gameWordString.split('');
     console.log("this is the game word: " + this.gameWordString);
     this.gameWordArray.forEach(element => {
@@ -260,7 +266,7 @@ var game = {
     // console.log("letter passed in is: " + letter);
     // console.log("upper case version of it is : " + letter.toUpperCase());
     var letterState = "";
-    if (letter === "=") {
+    if (letter === "0") {
       letterState = "quit";
     }
       else if (this.usedLetters.indexOf(letter.toUpperCase()) >= 0)  {
@@ -282,6 +288,7 @@ var game = {
   processLetterHit: function(letter) {
     console.log("in game.processLetterHit"); 
     for (i=0; i < this.gameWordArray.length; i++) {
+      // console.log("game word array: " + this.gameWordArray[i]);
       if (this.gameWordArray[i] === letter) {
         this.gameWordLetterStatusArray[i] = letter;
       }
@@ -320,10 +327,36 @@ var game = {
         return "win";
       };
 
+  },
+
+  // perform necessary steps after game end detected
+  executeGameEnd: function(word,winOrLoss) {
+    console.log("in game.executeGameEnd");
+    session.recordGameResultInSession(word,winOrLoss);
+    if (winOrLoss === "win") {
+      userInterface.displayMessageElement("Game Over, you " + winOrLoss + ".");
+    }
+    else {
+      userInterface.displayMessageElement("Game Over, you " + winOrLoss + ". The president was: " + game.gameWordString);
+    };
+
+  // probably generate a message
+  // and somehow need to reset for next game
+  // probably need a executeGameReset function
+  },  
+
+  // perform necessary steps to get the next game going
+  executeGameReset: function() {
+    console.log("in game.executeGameReset"); 
+  // need to call methods and/or update following:
+  // record game results in the session
+  // reset the arrays for game word
+  // check to see if any word pool word left
+  // or maybe that duty goes to the session object
+  // which then can start the next game?
   }
-
-
 };
+
   
 
 
@@ -336,10 +369,87 @@ game.initGameWord();
 userInterface.initDisplay();
 userInterface.diagnosticDump();
 
+ // Core program logic - this function is run whenever the user presses a key.
+ document.onkeyup = function(event) {
 
+  // Determines which key was pressed.
+  var keyUserPressed = event.key.toUpperCase();
+  userInterface.displayPlayerLetterElement("You pressed key: " + keyUserPressed);
+
+  
+  // psuedo code logic:
+  // check key pressed state 
+    // if invalid send message
+    // if used already send message
+    // if quit - not sure what to do yet - send message
+    // if miss then 
+      // process a miss
+      // check game state to see if this is a loss due to last guess 
+        // do loss stuff
+        // if not loss then
+          // continue on
+    // if hit then 
+      // process a hit
+      // check game state to see if this is a loss due to last guess
+        // do loss stuff
+      // if win
+        // do win stuff
+      // if neither
+        // continue on
+  var keyPressState = game.checkPickedLetter(keyUserPressed);   
+  var gameState = game.checkGameState();
+  console.log("the letter pressed has a state of: " + keyPressState)
+  console.log("the letter pressed resulted in game state of: " + gameState);
+
+  if (keyPressState === "invalid") {
+    userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', please press a thru z or 0 to quit.");
+  };
+
+  if (keyPressState === "used") {
+    userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you already used that letter.");
+  };
+
+  if (keyPressState === "quit") {
+    userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', quit function doesn't work yet.");
+  };
+
+  if (keyPressState === "miss") {
+    userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', that is a miss.");
+    game.processLetterMiss(keyUserPressed);
+    gameState = game.checkGameState();
+    if (gameState === "loss") {
+      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just lost.");
+      game.executeGameEnd(game.gameWordString,"loss");
+    }
+    else {
+      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', game goes on.");
+    };
+  };  
+
+  if (keyPressState === "hit") {
+    userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', that is a hit.");
+    userInterface.diagnosticDump();
+    game.processLetterHit(keyUserPressed);
+    userInterface.diagnosticDump();
+    gameState = game.checkGameState();
+    userInterface.diagnosticDump();
+    if (gameState === "loss") {
+      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just lost.");
+      game.executeGameEnd(game.gameWordString,"loss");
+    }
+      else if (gameState === "win") {
+        userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just won.");
+        game.executeGameEnd(game.gameWordString,"win");
+      }
+      else {
+        userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', game goes on.");
+      };
+  };
+
+  };
 
 // session.recordGameResultInSession();
-session.endSession();
+// session.endSession();
 // ----------------------------------------------------------
 
 
