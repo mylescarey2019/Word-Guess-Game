@@ -2,12 +2,18 @@
 javascript Presidential Word Guess game
 --------------------------------------------------------- */
 
+* {
+  box-sizing: border-box;
+}
+
 #main-div {
   background-image: url(../images/pres1bw.jpg);
   background-position: center; 
   background-repeat: no-repeat; 
   background-size: cover; 
-  margin: 0 auto;
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0px;
   width: 100%;
   max-width: 678px;
@@ -17,9 +23,29 @@ javascript Presidential Word Guess game
   
 }
  
-#game {
+/* #game {
   position: relative;
-  top: 410px;
+  top: 370px;
+  left: 0px;
+  margin-left: auto;
+  margin-right: auto;
+} */
+
+#word-display {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size:  32pt;
+  font-weight: bold;
+  text-align: center;
+  color: #ffffff;
+  background-color: rgba(60,59,110,.7);
+  
+  /*border: 1px solid #b22234;
+  padding: 3px;
+  margin: 3px; */
+  margin: 0px;
+  width: 100%;
+  position: relative;
+  top: 225px;
   left: 0px;
 }
 
@@ -28,10 +54,54 @@ p {
   font-size:  14px;
   text-align: left;
   color: #ffffff;
-  background-color: #3c3b6e;
-  border: 1px solid #b22234;
+  /* background-color: #3c3b6e; */
+  background-color: rgba(60,59,110,.7);
+  border: 1px solid rgba(178, 34, 52, .7);
+  /* border: 1px solid #b22234; */
   padding: 3px;
   margin: 3px;
   width: 500px;
-
 }
+
+#letters-used {
+  position: relative;
+  top: 450px;
+  left: 0px;
+  width: 500px;
+}
+
+#guess-count {
+  position: relative;
+  top: 450px;
+  left: 0px;
+  width: 200px;
+}
+
+#player-letter {
+  position: relative;
+  top: 425px;
+  left: 205px;
+  width: 140px;
+}
+
+#win-count {
+  position: relative;
+  top: 400px;
+  left: 350px;
+  width: 72px;
+}
+#loss-count {
+  position: relative;
+  top: 375px;
+  left: 428px;
+  width: 72px;
+}
+
+#message {
+  position: relative;
+  top: 375px;
+  left: 0px;
+  width: 500px;
+}
+
+

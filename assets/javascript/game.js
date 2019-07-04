@@ -126,7 +126,8 @@ var userInterface = {
   // display word element
   displayWordElement: function() {
     console.log("in userInterface.displayWordElement"); 
-    wordDisplayElement.textContent = "Word: " + game.getDisplayableGameWord(); 
+    // wordDisplayElement.textContent = "Word: " + game.getDisplayableGameWord(); 
+    wordDisplayElement.textContent = game.getDisplayableGameWord(); 
   },
 
   // display used letters element
@@ -195,6 +196,7 @@ var userInterface = {
 var game = {
   // properties to be determined later - need more understanding how
   // on page elements will be manipulated during game play first
+  gameActive: true,
   guessesRemaining: 12,
   gameWordString: "",
   gameWordArray: [],
@@ -210,6 +212,7 @@ var game = {
     console.log("game.initGameWord");
     this.gameWordString = wordPool.getWordFromPool();
     // this.gameWordString = "GEORGE W BUSH";
+    // this.gameWordString = "BENJAMIN HARRISON";
     this.gameWordArray = this.gameWordString.split('');
     console.log("this is the game word: " + this.gameWordString);
     this.gameWordArray.forEach(element => {
@@ -329,15 +332,16 @@ var game = {
 
   },
 
-  // perform necessary steps after game end detected
+  // perform necessary steps after game end detecteds
   executeGameEnd: function(word,winOrLoss) {
     console.log("in game.executeGameEnd");
     session.recordGameResultInSession(word,winOrLoss);
+    game.gameActive = false;
     if (winOrLoss === "win") {
-      userInterface.displayMessageElement("Game Over, you " + winOrLoss + ".");
+      userInterface.displayMessageElement("Game Over, you won.");
     }
     else {
-      userInterface.displayMessageElement("Game Over, you " + winOrLoss + ". The president was: " + game.gameWordString);
+      userInterface.displayMessageElement("Game Over, you lost. The president was: " + game.gameWordString);
     };
 
   // probably generate a message
@@ -376,7 +380,11 @@ userInterface.diagnosticDump();
   var keyUserPressed = event.key.toUpperCase();
   userInterface.displayPlayerLetterElement("You pressed key: " + keyUserPressed);
 
-  
+  // biggest issue for me to crack is how to show results at end-game and then
+  // move to the next game & how to respond to a request to quit the session
+  // want to show session stats when session is quit or all word exhausted
+  // ideally allow for new session to being also
+
   // psuedo code logic:
   // check key pressed state 
     // if invalid send message
@@ -400,53 +408,61 @@ userInterface.diagnosticDump();
   var gameState = game.checkGameState();
   console.log("the letter pressed has a state of: " + keyPressState)
   console.log("the letter pressed resulted in game state of: " + gameState);
+  
+  // for game end and starting the next game - think a message that say hit any key for next game
+  // could work if this listener had an IF for game-end that made all the stuff below bypassed in some way
+  // think along these line next
 
-  if (keyPressState === "invalid") {
-    userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', please press a thru z or 0 to quit.");
-  };
-
-  if (keyPressState === "used") {
-    userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you already used that letter.");
-  };
-
-  if (keyPressState === "quit") {
-    userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', quit function doesn't work yet.");
-  };
-
-  if (keyPressState === "miss") {
-    userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', that is a miss.");
-    game.processLetterMiss(keyUserPressed);
-    gameState = game.checkGameState();
-    if (gameState === "loss") {
-      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just lost.");
-      game.executeGameEnd(game.gameWordString,"loss");
-    }
-    else {
-      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', game goes on.");
+  if (game.gameActive) {
+    if (keyPressState === "invalid") {
+      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', please press a thru z or 0 to quit.");
     };
-  };  
 
-  if (keyPressState === "hit") {
-    userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', that is a hit.");
-    userInterface.diagnosticDump();
-    game.processLetterHit(keyUserPressed);
-    userInterface.diagnosticDump();
-    gameState = game.checkGameState();
-    userInterface.diagnosticDump();
-    if (gameState === "loss") {
-      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just lost.");
-      game.executeGameEnd(game.gameWordString,"loss");
-    }
-      else if (gameState === "win") {
-        userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just won.");
-        game.executeGameEnd(game.gameWordString,"win");
+    if (keyPressState === "used") {
+      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you already used that letter.");
+    };
+
+    if (keyPressState === "quit") {
+      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', quit function doesn't work yet.");
+    };
+
+    if (keyPressState === "miss") {
+      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', that is a miss.");
+      game.processLetterMiss(keyUserPressed);
+      gameState = game.checkGameState();
+      if (gameState === "loss") {
+        userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just lost.");
+        game.executeGameEnd(game.gameWordString,"loss");
       }
       else {
         userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', game goes on.");
       };
-  };
+    };  
 
-  };
+    if (keyPressState === "hit") {
+      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', that is a hit.");
+      userInterface.diagnosticDump();
+      game.processLetterHit(keyUserPressed);
+      userInterface.diagnosticDump();
+      gameState = game.checkGameState();
+      userInterface.diagnosticDump();
+      if (gameState === "loss") {
+        userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just lost.");
+        game.executeGameEnd(game.gameWordString,"loss");
+      }
+        else if (gameState === "win") {
+          userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just won.");
+          game.executeGameEnd(game.gameWordString,"win");
+        }
+        else {
+          userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', game goes on.");
+        };
+    };
+  }
+  else {
+    console.log("this is game over branch");
+  }
+};
 
 // session.recordGameResultInSession();
 // session.endSession();
