@@ -6,6 +6,7 @@ var messageElement = document.getElementById("message");
 var playerLetterElement = document.getElementById("player-letter");
 var lettersUsedElement = document.getElementById("letters-used");
 var wordDisplayElement = document.getElementById("word-display");
+var termDisplayElement = document.getElementById("term-display");
 var guessCountElement = document.getElementById("guess-count");
 var winCountElement = document.getElementById("win-count");
 var lossCountElement = document.getElementById("loss-count");
@@ -58,8 +59,8 @@ var session =  {
 var wordPool = {
   masterWordList: ["WASHINGTON","JOHN ADAMS","JEFFERSON","MADISON","MONROE","JOHN Q ADAMS","JACKSON","VAN BUREN","WILLIAM HARRISON",
   "TYLER","POLK","TAYLOR","FILLMORE","PIERCE","BUCHANAN","LINCOLN","ANDREW JOHNSON","GRANT","HAYES","GARFIELD", 
-  "ARTHUR","CLEVELAND","BENJAMIN HARRISON","MCKINLEY","ROOSEVELT","TAFT","WILSON","HARDING","COOLIDGE","HOOVER",
-  "ROOSEVELT","TRUMAN","EISENHOWER","KENNEDY","LYNDON JOHNSON","NIXON","FORD","CARTER","REAGAN","GEORGE BUSH",
+  "ARTHUR","CLEVELAND","BENJAMIN HARRISON","MCKINLEY","THEODORE ROOSEVELT","TAFT","WILSON","HARDING","COOLIDGE","HOOVER",
+  "FRANKLIN ROOSEVELT","TRUMAN","EISENHOWER","KENNEDY","LYNDON JOHNSON","NIXON","FORD","CARTER","REAGAN","GEORGE BUSH",
   "CLINTON","GEORGE W BUSH","OBAMA","TRUMP"],
   availableWords: [],
 
@@ -103,7 +104,7 @@ var userInterface = {
   // initialize the display
   initDisplay: function() {
     console.log("in userInterface.initDisplay");
-    userInterface.displayMessageElement("Hello, let's play");
+    userInterface.displayMessageElement("Presidential Guess - use keys a thru z");
     userInterface.displayWordElement();
     userInterface.displayUsedLettersElement();
     userInterface.displayGuessRemainingElement();
@@ -117,7 +118,7 @@ var userInterface = {
     messageElement.textContent = message; 
   },
 
-  // display message element
+  // display player letter element
   displayPlayerLetterElement: function(message) {
     console.log("in userInterface.displayPlayerLetterElement"); 
     playerLetterElement.textContent = message; 
@@ -133,25 +134,38 @@ var userInterface = {
   // display used letters element
   displayUsedLettersElement: function() {
     console.log("in userInterface.displayUsedLettersElement"); 
-    lettersUsedElement.textContent = "Letters used: " + game.getDisplayableUsedLetterList();
+    lettersUsedElement.textContent = "letters: " + game.getDisplayableUsedLetterList();
   },
 
   // display guess remaining element
   displayGuessRemainingElement: function() {
     console.log("in userInterface.displayGuessRemainingElement"); 
-    guessCountElement.textContent = "Guesses Remaining: " + game.guessesRemaining;
+    guessCountElement.textContent = "chances: " + game.guessesRemaining;
   },
 
   // display wins element
   displayWinCountElement: function() {
     console.log("in userInterface.displayWinCountElement"); 
-    winCountElement.textContent = "Wins: " + session.wins;
+    winCountElement.textContent = "wins: " + session.wins;
   },
 
   // display losses element
   displayLossCountElement: function() {
     console.log("in userInterface.displayLossCountElement"); 
-    lossCountElement.textContent = "Loses: " + session.losses;
+    lossCountElement.textContent = "losses: " + session.losses;
+  },
+
+  // toggle the term display
+  showTermDisplayElement: function() {
+    console.log("in userInterface.showTermDisplayElement"); 
+    // termDisplayElement.setAttribute("visibility", "visible");
+    termDisplayElement.style.visibility = "visible";
+  },
+
+  // toggle the term display
+  hideTermDisplayElement: function() {
+    console.log("in userInterface.hideTermDisplayElement"); 
+    termDisplayElement.setAttribute("visibility", "hidden");
   },
 
   // update the word, used letters and guess count on display
@@ -197,7 +211,7 @@ var game = {
   // properties to be determined later - need more understanding how
   // on page elements will be manipulated during game play first
   gameActive: true,
-  guessesRemaining: 12,
+  guessesRemaining: 6,
   gameWordString: "",
   gameWordArray: [],
   gameWordLetterStatusArray: [],
@@ -213,6 +227,7 @@ var game = {
     this.gameWordString = wordPool.getWordFromPool();
     // this.gameWordString = "GEORGE W BUSH";
     // this.gameWordString = "BENJAMIN HARRISON";
+    // this.gameWordString = "FRANKLIN ROOSEVELT";
     this.gameWordArray = this.gameWordString.split('');
     console.log("this is the game word: " + this.gameWordString);
     this.gameWordArray.forEach(element => {
@@ -297,7 +312,6 @@ var game = {
       }
     };
     game.addLetterToUsedList(letter);
-    this.guessesRemaining--;
     userInterface.updateGameDisplay();
   },
 
@@ -337,11 +351,12 @@ var game = {
     console.log("in game.executeGameEnd");
     session.recordGameResultInSession(word,winOrLoss);
     game.gameActive = false;
+    userInterface.showTermDisplayElement();
     if (winOrLoss === "win") {
-      userInterface.displayMessageElement("Game Over, you won.");
+      userInterface.displayMessageElement("you won - press spacebar for next game");
     }
     else {
-      userInterface.displayMessageElement("Game Over, you lost. The president was: " + game.gameWordString);
+      userInterface.displayMessageElement("you lost - press spacebar for next game");
     };
 
   // probably generate a message
@@ -378,7 +393,7 @@ userInterface.diagnosticDump();
 
   // Determines which key was pressed.
   var keyUserPressed = event.key.toUpperCase();
-  userInterface.displayPlayerLetterElement("You pressed key: " + keyUserPressed);
+  // userInterface.displayPlayerLetterElement("You pressed key: " + keyUserPressed);
 
   // biggest issue for me to crack is how to show results at end-game and then
   // move to the next game & how to respond to a request to quit the session
@@ -415,47 +430,47 @@ userInterface.diagnosticDump();
 
   if (game.gameActive) {
     if (keyPressState === "invalid") {
-      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', please press a thru z or 0 to quit.");
+      userInterface.displayMessageElement("Please press a thru z or 0 to quit.");
     };
 
     if (keyPressState === "used") {
-      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you already used that letter.");
+      userInterface.displayMessageElement("You already used " + keyUserPressed);
     };
 
     if (keyPressState === "quit") {
-      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', quit function doesn't work yet.");
+      userInterface.displayMessageElement("Quit function doesn't work yet.");
     };
 
     if (keyPressState === "miss") {
-      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', that is a miss.");
+      userInterface.displayMessageElement("Letter '" + keyUserPressed + "' is a miss.");
       game.processLetterMiss(keyUserPressed);
       gameState = game.checkGameState();
       if (gameState === "loss") {
-        userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just lost.");
+        // userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just lost.");
         game.executeGameEnd(game.gameWordString,"loss");
       }
       else {
-        userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', game goes on.");
+        // userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', game goes on.");
       };
     };  
 
     if (keyPressState === "hit") {
-      userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', that is a hit.");
+      userInterface.displayMessageElement("Letter '" + keyUserPressed + "' is a hit.");
       userInterface.diagnosticDump();
       game.processLetterHit(keyUserPressed);
       userInterface.diagnosticDump();
       gameState = game.checkGameState();
       userInterface.diagnosticDump();
       if (gameState === "loss") {
-        userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just lost.");
+        // userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just lost.");
         game.executeGameEnd(game.gameWordString,"loss");
       }
         else if (gameState === "win") {
-          userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just won.");
+          // userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just won.");
           game.executeGameEnd(game.gameWordString,"win");
         }
         else {
-          userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', game goes on.");
+          // userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', game goes on.");
         };
     };
   }

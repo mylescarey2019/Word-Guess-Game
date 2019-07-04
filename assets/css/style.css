@@ -49,35 +49,125 @@ javascript Presidential Word Guess game
   left: 0px;
 }
 
-p {
+#term-display {
+  visibility: hidden;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size:  32pt;
+  font-weight: bold;
+  text-align: center;
+  color: #ffffff;
+  background-color: rgba(178, 34, 52, .7);
+  margin: 0px;
+  width: 100%;
+  position: relative;
+  top: 250px;
+  left: 0px;
+}
+
+/* p {
   font-family: Arial, Helvetica, sans-serif;
   font-size:  14px;
   text-align: left;
-  color: #ffffff;
+  color: #ffffff; */
   /* background-color: #3c3b6e; */
-  background-color: rgba(60,59,110,.7);
-  border: 1px solid rgba(178, 34, 52, .7);
+  /* background-color: rgba(60,59,110,.7);
+  border: 1px solid rgba(178, 34, 52, .7); */
   /* border: 1px solid #b22234; */
-  padding: 3px;
+  /* padding: 3px;
   margin: 3px;
   width: 500px;
-}
+} */
 
 #letters-used {
+  /* visibility: hidden; */
+  font-family: Arial, Helvetica, sans-serif;
+  font-size:  24pt;
+  font-weight: bold;
+  text-align: center;
+  color: #ffffff;
+  background-color: rgba(60,59,110,.7);
+  margin: 0px;
+  width: 100%;
+  position: relative;
+  top: 375px;
+  left: 0px;
+}
+
+#message {
+  /* visibility: hidden; */
+  font-family: Arial, Helvetica, sans-serif;
+  font-size:  24pt;
+  font-weight: bold;
+  text-align: center;
+  color: #ffffff;
+  background-color: rgba(60,59,110,.7);
+  margin: 0px;
+  width: 100%;
+  position: relative;
+  top: 329px;
+  left: 0px;
+}
+
+/* #letters-used {
   position: relative;
   top: 450px;
   left: 0px;
   width: 500px;
-}
+} */
 
 #guess-count {
+  /* visibility: hidden; */
+  font-family: Arial, Helvetica, sans-serif;
+  font-size:  24pt;
+  font-weight: bold;
+  text-align: center;
+  color: #ffffff;
+  background-color: rgba(60,59,110,.7);
+  margin: 0px;
+  width: 33%;
+  position: relative;
+  top: 385px;
+  left: 0px;
+}
+
+#win-count {
+  /* visibility: hidden; */
+  font-family: Arial, Helvetica, sans-serif;
+  font-size:  24pt;
+  font-weight: bold;
+  text-align: center;
+  color: #ffffff;
+  background-color: rgba(60,59,110,.7);
+  margin: 0px;
+  width: 33%;
+  position: relative;
+  top: 353px;
+  left: 220px;
+}
+
+#loss-count {
+  /* visibility: hidden; */
+  font-family: Arial, Helvetica, sans-serif;
+  font-size:  24pt;
+  font-weight: bold;
+  text-align: center;
+  color: #ffffff;
+  background-color: rgba(60,59,110,.7);
+  margin: 0px;
+  width: 33%;
+  position: relative;
+  top: 321px;
+  left: 440px;
+}
+
+/* #guess-count {
   position: relative;
   top: 450px;
   left: 0px;
   width: 200px;
-}
+} */
 
-#player-letter {
+/* #player-letter {
   position: relative;
   top: 425px;
   left: 205px;
@@ -95,13 +185,13 @@ p {
   top: 375px;
   left: 428px;
   width: 72px;
-}
+} */
 
-#message {
+/* #message {
   position: relative;
   top: 375px;
   left: 0px;
   width: 500px;
-}
+} */
 
 
