@@ -15,16 +15,23 @@ var lossCountElement = document.getElementById("loss-count");
 // ----------------------------------------------------------
 var session =  {
   playerName: "",
+  sessionActive: false,
   wins: 0,
   losses: 0,
   wordsWon: [],
   wordsLost: [],
 
   // begin the session
-  beginSession: function() {
-    console.log("in session.beginSession");
-    // this.playerName = prompt("What is your name?");
-    // call wordPool.init()
+  startSession: function() {
+    console.log("in session.startSession");
+    session.sessionActive = true;
+    this.wins = 0;
+    this.losses = 0;
+    this.wordsLost.splice(0,this.wordsLost.length);
+    this.wordsWon.splice(0,this.wordsWon.length);
+    wordPool.initWordPool();
+    game.startGame();
+    userInterface.diagnosticDump();
   },
 
 
@@ -57,12 +64,26 @@ var session =  {
 // object for pool of words
 // ----------------------------------------------------------
 var wordPool = {
+  // masterWordList: ["POLK","NIXON","FORD",],
   masterWordList: ["WASHINGTON","JOHN ADAMS","JEFFERSON","MADISON","MONROE","JOHN Q ADAMS","JACKSON","VAN BUREN","WILLIAM HARRISON",
   "TYLER","POLK","TAYLOR","FILLMORE","PIERCE","BUCHANAN","LINCOLN","ANDREW JOHNSON","GRANT","HAYES","GARFIELD", 
   "ARTHUR","CLEVELAND","BENJAMIN HARRISON","MCKINLEY","THEODORE ROOSEVELT","TAFT","WILSON","HARDING","COOLIDGE","HOOVER",
   "FRANKLIN ROOSEVELT","TRUMAN","EISENHOWER","KENNEDY","LYNDON JOHNSON","NIXON","FORD","CARTER","REAGAN","GEORGE BUSH",
   "CLINTON","GEORGE W BUSH","OBAMA","TRUMP"],
   availableWords: [],
+
+  // termList: ["32nd 1933-1937 1937-1941 1941-1945", "for nixon", "for ford"],
+  termList: [
+    "1st 1789-1793 1793-1789", "2nd 1797-1801", "3rd 1801-1805 1805-1809", "4th 1809-1813 1813-1817", "5th 1817-1821 1821-1825", 
+    "6th 1825-1829", "7th 1829-1833 1833-1837", "8th 1837-1841 ", "9th 1841-1841",
+    "10th 1841-1845", "11th 1845-1849", "12th 1849-1850", "13th 1850-1853", "14th 1853-1857", "15th 1857-1861", "16th 1861-1865 1865-1865",
+    "17th 1865-1869", "18th 1869-1873 1873-1877", "19th 1877-1881", "20th 1881-1881",
+    "21st 1881-1885", "22nd, 24th 1885-1889 1893-1897", "23rd 1889-1893", "25th 1897-1901", "26th 1901-1905 1905-1909", "27th 1909-1913",
+    "28th 1913-1917 1917-1921", "29th 1921-1923", "30th 1923-1927 1927-1929", "31st 1929-1933",
+    "32nd 1933-1937 1937-1941 1941-1945", "33rd 1945-1949 1949-1953", "34th 1953-1957 1957-1961", "35th 1961-1963", "36th 1963-1965 1965-1969",
+    "37th 1969-1973 1973-1974", "38th 1974-1977", "39th 1977-1981", "40th 1981-1985 1985-1989", "41st 1989-1993",
+    "42nd 1993-1997 1997-2001", "43rd 2001-2005 2005-2009", "44th 2009-2013 2013-2017", "45th 2017 - Currently in Office"
+  ],
 
   // initialize the available word list from master list
   initWordPool: function() {
@@ -92,7 +113,14 @@ var wordPool = {
     // return it to the caller
     var nextWordToPlay = this.availableWords[Math.floor(Math.random() * this.availableWords.length)];
     this.availableWords.splice(this.availableWords.indexOf(nextWordToPlay),1);
+    console.log("in wordPool.getWordFromPool word left: " + this.availableWords.length);
     return nextWordToPlay;
+  },
+
+  // get word terms
+  getTermForWord(word) {
+    console.log("in wordPool.getTermForWord");
+    return this.termList[this.masterWordList.indexOf(word)];
   }
 };
 
@@ -104,12 +132,14 @@ var userInterface = {
   // initialize the display
   initDisplay: function() {
     console.log("in userInterface.initDisplay");
-    userInterface.displayMessageElement("Presidential Guess - use keys a thru z");
+    wordDisplayElement.style.color = "#ffffff"; 
     userInterface.displayWordElement();
+    userInterface.hideTermDisplayElement();
     userInterface.displayUsedLettersElement();
     userInterface.displayGuessRemainingElement();
     userInterface.displayWinCountElement();
     userInterface.displayLossCountElement();
+    userInterface.displayMessageElement("use keys a through z");
   },  
 
   // display message element
@@ -155,17 +185,17 @@ var userInterface = {
     lossCountElement.textContent = "losses: " + session.losses;
   },
 
-  // toggle the term display
-  showTermDisplayElement: function() {
+  // show the term display
+  showTermDisplayElement: function(word) {
     console.log("in userInterface.showTermDisplayElement"); 
-    // termDisplayElement.setAttribute("visibility", "visible");
+    termDisplayElement.textContent = wordPool.getTermForWord(word);
     termDisplayElement.style.visibility = "visible";
   },
 
-  // toggle the term display
+  // hide the term display
   hideTermDisplayElement: function() {
     console.log("in userInterface.hideTermDisplayElement"); 
-    termDisplayElement.setAttribute("visibility", "hidden");
+    termDisplayElement.style.visibility = "hidden";
   },
 
   // update the word, used letters and guess count on display
@@ -180,12 +210,16 @@ var userInterface = {
   diagnosticDump: function() {
     console.log("------------------------")
     console.log("in userInterface.diagnosticDump"); 
-    console.log("word: " + game.getDisplayableGameWord());
+    console.log("display word: " + game.getDisplayableGameWord());
+    console.log("word: " + game.gameWordString);
     console.log("used letters: " + game.getDisplayableUsedLetterList());
     console.log("guess remaining: " + game.guessesRemaining);
     console.log("game state: " + game.checkGameState());
+    console.log("words remaining: " + wordPool.availableWords.length);
     console.log("wins: " + session.wins);
     console.log("losses: " + session.losses);
+    console.log("game active: " + game.gameActive);
+    console.log("session active: " + session.sessionActive);
     session.wordsWon.forEach(element => {
       console.log("word won: " + element);
     });
@@ -210,7 +244,7 @@ var userInterface = {
 var game = {
   // properties to be determined later - need more understanding how
   // on page elements will be manipulated during game play first
-  gameActive: true,
+  gameActive: false,
   guessesRemaining: 6,
   gameWordString: "",
   gameWordArray: [],
@@ -259,6 +293,14 @@ var game = {
     this.usedLetters.splice(0,this.usedLetters.length);
   },
    
+   // clear word letter array
+   clearWord: function() {
+    console.log("in game.clearWord");  
+    gameWordString = "";
+    gameDisplayWord = "";
+    this.gameWordArray.splice(0,this.gameWordArray.length);
+    this.gameWordLetterStatusArray.splice(0,this.gameWordLetterStatusArray.length);
+  }, 
 
   // add a letter to the picked letter list
   addLetterToUsedList: function(letter) {
@@ -315,6 +357,17 @@ var game = {
     userInterface.updateGameDisplay();
   },
 
+  // solve word in case of loss
+  solveWord: function() {
+    console.log("in game.solveWord"); 
+    for (i=0; i < this.gameWordArray.length; i++) {
+      this.gameWordLetterStatusArray[i] = this.gameWordArray[i];
+    wordDisplayElement.style.color = "#b22234";  
+    }
+    userInterface.updateGameDisplay();
+  },
+
+
   // apply results of not finding letter in the word
   processLetterMiss: function(letter) {
     console.log("in game.processLetterMiss"); 
@@ -346,33 +399,33 @@ var game = {
 
   },
 
-  // perform necessary steps after game end detecteds
-  executeGameEnd: function(word,winOrLoss) {
-    console.log("in game.executeGameEnd");
+  // perform necessary steps after game end detected
+  endGame: function(word,winOrLoss) {
+    console.log("in game.endGame");
     session.recordGameResultInSession(word,winOrLoss);
     game.gameActive = false;
-    userInterface.showTermDisplayElement();
+    userInterface.showTermDisplayElement(game.gameWordString);
     if (winOrLoss === "win") {
-      userInterface.displayMessageElement("you won - press spacebar for next game");
+      userInterface.displayMessageElement("you won - press spacebar for next word");
     }
     else {
-      userInterface.displayMessageElement("you lost - press spacebar for next game");
+      game.solveWord();
+      userInterface.displayMessageElement("you lost - press spacebar for next word");
     };
-
-  // probably generate a message
-  // and somehow need to reset for next game
-  // probably need a executeGameReset function
+    userInterface.diagnosticDump();
   },  
 
   // perform necessary steps to get the next game going
-  executeGameReset: function() {
-    console.log("in game.executeGameReset"); 
-  // need to call methods and/or update following:
-  // record game results in the session
-  // reset the arrays for game word
-  // check to see if any word pool word left
-  // or maybe that duty goes to the session object
-  // which then can start the next game?
+  startGame: function() {
+    console.log("in game.startGame"); 
+    game.gameActive = true;
+    game.guessesRemaining = 6;
+    userInterface.hideTermDisplayElement();
+    game.clearUsedLetters();
+    game.clearWord();
+    game.initGameWord();
+    userInterface.initDisplay();
+    userInterface.diagnosticDump();
   }
 };
 
@@ -382,72 +435,43 @@ var game = {
 // -------------------------------------------------------------------
 //  *** Start of game flow *** 
 // -------------------------------------------------------------------
-session.beginSession();
-wordPool.initWordPool();
-game.initGameWord();
-userInterface.initDisplay();
-userInterface.diagnosticDump();
+session.startSession();
+// moved to executeGameStart()
+// wordPool.initWordPool();
+// game.initGameWord();
+// userInterface.initDisplay();
+// userInterface.diagnosticDump();
 
  // Core program logic - this function is run whenever the user presses a key.
  document.onkeyup = function(event) {
 
   // Determines which key was pressed.
   var keyUserPressed = event.key.toUpperCase();
-  // userInterface.displayPlayerLetterElement("You pressed key: " + keyUserPressed);
-
-  // biggest issue for me to crack is how to show results at end-game and then
-  // move to the next game & how to respond to a request to quit the session
-  // want to show session stats when session is quit or all word exhausted
-  // ideally allow for new session to being also
-
-  // psuedo code logic:
-  // check key pressed state 
-    // if invalid send message
-    // if used already send message
-    // if quit - not sure what to do yet - send message
-    // if miss then 
-      // process a miss
-      // check game state to see if this is a loss due to last guess 
-        // do loss stuff
-        // if not loss then
-          // continue on
-    // if hit then 
-      // process a hit
-      // check game state to see if this is a loss due to last guess
-        // do loss stuff
-      // if win
-        // do win stuff
-      // if neither
-        // continue on
   var keyPressState = game.checkPickedLetter(keyUserPressed);   
   var gameState = game.checkGameState();
-  console.log("the letter pressed has a state of: " + keyPressState)
-  console.log("the letter pressed resulted in game state of: " + gameState);
+  // console.log("the letter pressed has a state of: " + keyPressState)
+  // console.log("the letter pressed resulted in game state of: " + gameState);
   
-  // for game end and starting the next game - think a message that say hit any key for next game
-  // could work if this listener had an IF for game-end that made all the stuff below bypassed in some way
-  // think along these line next
-
-  if (game.gameActive) {
+  if (game.gameActive) {  // this is the in active game & session branch of the mainloop
     if (keyPressState === "invalid") {
-      userInterface.displayMessageElement("Please press a thru z or 0 to quit.");
+      userInterface.displayMessageElement("please press a thru z or 0 to quit.");
     };
 
     if (keyPressState === "used") {
-      userInterface.displayMessageElement("You already used " + keyUserPressed);
+      userInterface.displayMessageElement("you already used " + keyUserPressed);
     };
 
     if (keyPressState === "quit") {
-      userInterface.displayMessageElement("Quit function doesn't work yet.");
+      userInterface.displayMessageElement("quit function doesn't work yet.");
     };
 
     if (keyPressState === "miss") {
-      userInterface.displayMessageElement("Letter '" + keyUserPressed + "' is a miss.");
+      userInterface.displayMessageElement("letter '" + keyUserPressed + "' is a miss.");
       game.processLetterMiss(keyUserPressed);
       gameState = game.checkGameState();
       if (gameState === "loss") {
         // userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just lost.");
-        game.executeGameEnd(game.gameWordString,"loss");
+        game.endGame(game.gameWordString,"loss");
       }
       else {
         // userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', game goes on.");
@@ -455,29 +479,92 @@ userInterface.diagnosticDump();
     };  
 
     if (keyPressState === "hit") {
-      userInterface.displayMessageElement("Letter '" + keyUserPressed + "' is a hit.");
-      userInterface.diagnosticDump();
+      userInterface.displayMessageElement("letter '" + keyUserPressed + "' is a hit.");
       game.processLetterHit(keyUserPressed);
-      userInterface.diagnosticDump();
       gameState = game.checkGameState();
       userInterface.diagnosticDump();
       if (gameState === "loss") {
         // userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just lost.");
-        game.executeGameEnd(game.gameWordString,"loss");
+        game.endGame(game.gameWordString,"loss");
       }
         else if (gameState === "win") {
           // userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just won.");
-          game.executeGameEnd(game.gameWordString,"win");
+          game.endGame(game.gameWordString,"win");
         }
         else {
           // userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', game goes on.");
         };
     };
   }
-  else {
-    console.log("this is game over branch");
-  }
+  else {  // this is the game over & session over branch of the mainloop
+      console.log("in game not active branch");
+      if (session.sessionActive) { // session is active
+        console.log("in game active branch - session is active");
+        if (keyUserPressed === " ") {
+          console.log("in game active branch - session is active, spacebar - check word avail");
+          if (wordPool.isWordAvailable()) {
+            console.log("in game active branch - word is available - start new game");
+            game.startGame();
+          }
+          else {
+            console.log("in game active branch - no words - end session");
+            session.sessionActive = false;
+            userInterface.displayMessageElement('no more words - hit spacebar to start over');
+          }
+        }
+      } 
+      else { // session is not active
+        console.log("in session not active branch");
+        if (keyUserPressed === " ") {
+          console.log("in session not active branch - spacebar, start new session");
+          session.startSession();
+        }
+      }
+    } 
 };
+
+
+
+
+  // else {  // this is the game over & session over branch of the mainloop
+  //   console.log("in game not active branch");
+  //   if (session.sessionActive) {
+  //     console.log("in session not active branch");
+  //     if (keyUserPressed === " ") {
+  //       console.log("in session not active branch - spacebar, start new session");
+  //       session.startSession();
+  //     };
+  //   }
+  //   else { 
+  //     console.log("in game not active branch - session is active");
+  //     if (keyUserPressed === " ") {
+  //       console.log("in game not active branch - session is active, spacebar - check word avail");
+  //       if (wordPool.isWordAvailable()) {
+  //         console.log("in game not active branch - word is available - start new game");
+  //         game.startGame();
+  //       }
+  //       else {
+  //         console.log("in game not active branch - no words - end session");
+  //         session.sessionOver = true;
+  //         userInterface.displayMessageElement('No more words - hit spacebar to start over');
+  //       };
+  //     };
+  //   };
+
+
+    // console.log("this is game over branch - time to start next game if player hit spacebar");
+    // if (keyUserPressed === " ") {
+    //   console.log("in main loop - check for word availability");
+    //   if (wordPool.isWordAvailable()) {
+    //     console.log("in main loop - word available for next game");
+    //     game.startGame();
+    //   }
+    //   else {
+    //     console.log("in main loop - session over all words used");
+    //     session.sessionOver = true;
+    //     userInterface.displayMessageElement('No more words - hit spacebar to start over')
+
+
 
 // session.recordGameResultInSession();
 // session.endSession();
