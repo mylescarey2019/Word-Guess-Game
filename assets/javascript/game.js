@@ -67,13 +67,12 @@ var wordPool = {
   // masterWordList: ["POLK","NIXON","FORD",],
   masterWordList: ["GEORGE WASHINGTON","JOHN ADAMS","THOMAS JEFFERSON","JAMES MADISON","JAMES MONROE","JOHN Q ADAMS","ANDREW JACKSON",
   "MARTIN VAN BUREN","WILLIAM HARRISON",
-  "JOHN TYLER","JAME POLK","ZACHERY TAYLOR","MILLARD FILLMORE","FRAKLIN PIERCE","JAMES BUCHANAN","ABRAHAM LINCOLN","ANDREW JOHNSON",
+  "JOHN TYLER","JAMES POLK","ZACHARY TAYLOR","MILLARD FILLMORE","FRANKLIN PIERCE","JAMES BUCHANAN","ABRAHAM LINCOLN","ANDREW JOHNSON",
   "ULYSSES GRANT","RUTHERFORD HAYES","JAMES GARFIELD", 
   "CHESTER ARTHUR","GROVER CLEVELAND","BENJAMIN HARRISON","WILLIAM MCKINLEY","THEODORE ROOSEVELT","WILLIAM TAFT",
   "WOODROW WILSON", "WARREN HARDING","CALVIN COOLIDGE","HERBERT HOOVER",
-  "FRANKLIN ROOSEVELT","HARRY TRUMAN","DWIGHT EISENHOWER","JOHN KENNEDY","LYNDON JOHNSON","RICHARD NIXON","GERALD FORD",
-  "JIMMY CARTER","RONALD REAGAN","GEORGE BUSH",
-  "BILL CLINTON","GEORGE W BUSH","BARACK OBAMA","DONALD TRUMP"],
+  "FRANKLIN D ROOSEVELT","HARRY TRUMAN","DWIGHT EISENHOWER","JOHN F KENNEDY","LYNDON JOHNSON","RICHARD NIXON","GERALD FORD",
+  "JIMMY CARTER","RONALD REAGAN","GEORGE BUSH","BILL CLINTON","GEORGE W BUSH","BARACK OBAMA","DONALD TRUMP"],
   // masterWordList: ["WASHINGTON","JOHN ADAMS","JEFFERSON","MADISON","MONROE","JOHN Q ADAMS","JACKSON","VAN BUREN","WILLIAM HARRISON",
   // "TYLER","POLK","TAYLOR","FILLMORE","PIERCE","BUCHANAN","LINCOLN","ANDREW JOHNSON","GRANT","HAYES","GARFIELD", 
   // "ARTHUR","CLEVELAND","BENJAMIN HARRISON","MCKINLEY","THEODORE ROOSEVELT","TAFT","WILSON","HARDING","COOLIDGE","HOOVER",
@@ -243,16 +242,8 @@ var userInterface = {
 // ----------------------------------------------------------
 // object for game
 // ----------------------------------------------------------
-// this will have much of the core logic 
-// have to see how it fills out - some methods in userInterface
-// might be better placed here - such as managing the word state
-// and managing the used letter list
-// perhaps that happens here and userInterface simply has to act
-// on whole word strings that it is passed for the word and for
-// the used leter list - maybe
+
 var game = {
-  // properties to be determined later - need more understanding how
-  // on page elements will be manipulated during game play first
   gameActive: false,
   guessesRemaining: 6,
   gameWordString: "",
@@ -260,7 +251,7 @@ var game = {
   gameWordLetterStatusArray: [],
   gameDisplayWord: "",
   usedLetters: [],
-  // there is a better way than this to check for a-z but finding it yet
+  // there is a better way than this to check for a-z but not finding it yet
   alphaLetters: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N',
                   'O','P','Q','R','S','T','U','V','W','X','Y','Z'],
 
@@ -415,11 +406,11 @@ var game = {
     game.gameActive = false;
     userInterface.showTermDisplayElement(game.gameWordString);
     if (winOrLoss === "win") {
-      userInterface.displayMessageElement("you won - press spacebar for next word");
+      userInterface.displayMessageElement("you won - press spacebar for next name");
     }
     else {
       game.solveWord();
-      userInterface.displayMessageElement("you lost - press spacebar for next word");
+      userInterface.displayMessageElement("you lost - press spacebar for next name");
     };
     userInterface.diagnosticDump();
   },  
@@ -518,7 +509,7 @@ session.startSession();
           else {
             console.log("in game active branch - no words - end session");
             session.sessionActive = false;
-            userInterface.displayMessageElement('no more words - hit spacebar to start over');
+            userInterface.displayMessageElement('no more names - hit spacebar to start over');
           }
         }
       } 
@@ -531,134 +522,4 @@ session.startSession();
       }
     } 
 };
-
-
-
-
-  // else {  // this is the game over & session over branch of the mainloop
-  //   console.log("in game not active branch");
-  //   if (session.sessionActive) {
-  //     console.log("in session not active branch");
-  //     if (keyUserPressed === " ") {
-  //       console.log("in session not active branch - spacebar, start new session");
-  //       session.startSession();
-  //     };
-  //   }
-  //   else { 
-  //     console.log("in game not active branch - session is active");
-  //     if (keyUserPressed === " ") {
-  //       console.log("in game not active branch - session is active, spacebar - check word avail");
-  //       if (wordPool.isWordAvailable()) {
-  //         console.log("in game not active branch - word is available - start new game");
-  //         game.startGame();
-  //       }
-  //       else {
-  //         console.log("in game not active branch - no words - end session");
-  //         session.sessionOver = true;
-  //         userInterface.displayMessageElement('No more words - hit spacebar to start over');
-  //       };
-  //     };
-  //   };
-
-
-    // console.log("this is game over branch - time to start next game if player hit spacebar");
-    // if (keyUserPressed === " ") {
-    //   console.log("in main loop - check for word availability");
-    //   if (wordPool.isWordAvailable()) {
-    //     console.log("in main loop - word available for next game");
-    //     game.startGame();
-    //   }
-    //   else {
-    //     console.log("in main loop - session over all words used");
-    //     session.sessionOver = true;
-    //     userInterface.displayMessageElement('No more words - hit spacebar to start over')
-
-
-
-// session.recordGameResultInSession();
-// session.endSession();
-// ----------------------------------------------------------
-
-
-// // ----------------------------------------------------------
-// // this is a section to simply validate each method as it is coded
-// // if appropriate call location is not yet known
-// wordPool.masterWordList.forEach(element => {
-//   console.log("master list: " + element);
-// });  
-
-// wordPool.availableWords.forEach(element => {
-//   console.log("available list: " + element);
-// }); 
-// console.log("words remaining: " + wordPool.isWordAvailable());
-// for (i=0;i<wordPool.masterWordList.length;i++) {
-//   console.log("this is the word from word pool: " + wordPool.getWordFromPool());
-// };
-// console.log("words remaining: " + wordPool.isWordAvailable());
-// wordPool.availableWords.forEach(element => {
-//   console.log("available list: " + element);
-// }); 
-
-// userInterface.displayWordElement();
-// // show used letter list
-// game.usedLetters.forEach(element => {
-//   console.log(element)
-// });
-// console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
-// // add some letters to used letter list
-// // game.addLetterToUsedList('G');
-// // game.addLetterToUsedList('O');
-// // game.addLetterToUsedList('S');
-// // show used letter list
-// game.usedLetters.forEach(element => {
-//   console.log(element)
-// });
-// console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
-// game.gameWordArray.forEach(element => {
-//   console.log("game word array elements: " + element);
-// });
-// // check letter picked
-// console.log("letter G is: " + game.checkPickedLetter('G'));
-// console.log("letter = is: " + game.checkPickedLetter('='));
-// console.log("letter Y is: " + game.checkPickedLetter('Y'));
-// console.log("letter B is: " + game.checkPickedLetter('B'));
-// console.log("letter 7 is: " + game.checkPickedLetter('7'));
-// console.log("letter / is: " + game.checkPickedLetter('/'));
-// console.log("letter ' ' is: " + game.checkPickedLetter(' '));
-// console.log("letter g is: " + game.checkPickedLetter('g'));
-// console.log("letter y is: " + game.checkPickedLetter('y'));
-// console.log("letter b is: " + game.checkPickedLetter('b'));
-// userInterface.diagnosticDump();
-// // process a hit
-// game.processLetterHit('G');
-// game.processLetterHit('E');
-// game.processLetterHit('O');
-// game.processLetterHit('R');
-// userInterface.diagnosticDump();
-// // process a miss
-// game.processLetterMiss('K');
-// userInterface.diagnosticDump();
-// game.processLetterHit('U');
-// game.processLetterHit('B');
-// game.processLetterHit('S');
-// game.processLetterHit('H');
-// game.processLetterHit('W');
-// session.recordGameResultsInSession("GEORGE W BUSH","win");
-
-// userInterface.diagnosticDump();
-// // update the game display
-// userInterface.updateGameDisplay();
-
-// userInterface.displayUsedLettersElement();
-// // clear used letter list
-// game.clearUsedLetters();
-// // show used letter list
-// game.usedLetters.forEach(element => {
-//   console.log(element)
-// });
-// console.log("displayble used letter list: " + game.getDisplayableUsedLetterList());
-
-
-
-
 
