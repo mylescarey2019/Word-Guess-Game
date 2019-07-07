@@ -1,7 +1,71 @@
 // ---------------------------------------------------------
 // javascript Presidential Word Guess game
 // ---------------------------------------------------------
+// Summary:
+// This is a word guessing game based on Hang-Man game.
+// Theme is the 4 US Presidents and th player uses keyboard
+// to "guess" letters.  THe player loses if the name cannot
+// be determined before having 6 "misses".  Player continues
+// through all 44 presidents and can play again if so desired.
+// ---------------------------------------------------------
 
+// ---------------------------------------------------------
+// Methodology:
+// I attempted OOP for this project.  While there are objects
+// and methods for almost all the code I did not uses 
+// classes at this time.
+//
+// The obects are:
+//  sesssion  - this tracks the wins/losses of all the 44 games
+//     and words won/lost
+//  game - this is a single name from the president list
+//    and includes managing the player letter guesses
+//  wordPool - this is the collection of 44 and has methods 
+//     to return a random name along with dwindling the list
+//     so no president appears more than once
+//  userInterface - this manages the text content in the html
+//    elements on the page
+// There is one main flow function for listening to key pressed.
+// If a game is finished the next game begins when the user
+// hits spacebar.  When all 44 names are complete the user
+// hits spacebar to start a whole new random sequence of the 44.
+// ---------------------------------------------------------
+
+// ---------------------------------------------------------
+// Refactoring Needed:
+// 1.  The page styling while nice, was the last effort put 
+//     into the project and deserves a better organized and 
+//     functional CSS and HTML files
+//
+// 2.  The javascript has tested out very solid with known
+//     bugs.  It was developed small method by method each
+//     unit tested using console.log and fed values/conditions.
+//     The assemply of the logic flow to the call the mehtods
+//     went pretty quickly due to the unit testing.
+//     Console.log was used extentively during development
+//     debugging.
+//
+//     However, there are aspects that could be improved:
+//        A) I would have like to learn and implement classes
+//        B) some array structures are in parallel instead
+//           of leveraging arrays of objects
+//        C) The quit function is undeveloped
+//        F) some of the methods might be to small - may be
+//           some opportunity to combine or group them better
+// ---------------------------------------------------------
+
+// ---------------------------------------------------------
+// Enhancements:
+//        A) I would like to have buttons and menus for 
+//           various functions & features
+//        B) I intended the Session ojbect to report an
+//           overall summary of names won/loss after all 44
+//           were completed
+//        C) more facts/information displays after word is solved
+// ---------------------------------------------------------
+
+
+// Global variables
 var messageElement = document.getElementById("message");
 var playerLetterElement = document.getElementById("player-letter");
 var lettersUsedElement = document.getElementById("letters-used");
@@ -10,8 +74,14 @@ var termDisplayElement = document.getElementById("term-display");
 var guessCountElement = document.getElementById("guess-count");
 var winCountElement = document.getElementById("win-count");
 var lossCountElement = document.getElementById("loss-count");
+
 // ----------------------------------------------------------
 // object for session
+// A session is the playing of the all 44 presidents name guesses
+// Session keeps track of wins, losses and words won, lost
+// Player will have chance to do another session after completion
+// Future enhancement will include a stats page after session
+// has been completed
 // ----------------------------------------------------------
 var session =  {
   playerName: "",
@@ -27,8 +97,10 @@ var session =  {
     session.sessionActive = true;
     this.wins = 0;
     this.losses = 0;
+    // clear arrays
     this.wordsLost.splice(0,this.wordsLost.length);
     this.wordsWon.splice(0,this.wordsWon.length);
+    // start first game in session
     wordPool.initWordPool();
     game.startGame();
     userInterface.diagnosticDump();
@@ -37,8 +109,7 @@ var session =  {
 
   // update session information following a game end
   recordGameResultInSession: function(word,result) {
-  // this is were we save the game results 
-  // into wins, loses, wordsWon/Lost  
+  // save the game results into wins, loses, wordsWon/Lost  
     console.log("in session.recordGameResultInSession"); 
     if (result === "win") {
       session.wins++;
@@ -56,6 +127,7 @@ var session =  {
   endSession: function() {
     console.log("in session.endSession");
     // this is were we display final stats and end the session
+    // future enhancement
   }
 
 };
@@ -64,23 +136,20 @@ var session =  {
 // object for pool of words
 // ----------------------------------------------------------
 var wordPool = {
-  // masterWordList: ["POLK","NIXON","FORD",],
-  masterWordList: ["GEORGE WASHINGTON","JOHN ADAMS","THOMAS JEFFERSON","JAMES MADISON","JAMES MONROE","JOHN Q ADAMS","ANDREW JACKSON",
+  // refactor point:  instead of using parallel arrays need to refactor as array of objects
+  // masterWordList: ["POLK","NIXON","FORD",],  // shorter list for testing cycles
+  masterWordList: ["GEORGE WASHINGTON","JOHN ADAMS","THOMAS JEFFERSON","JAMES MADISON","JAMES MONROE","JOHN QUINCY ADAMS","ANDREW JACKSON",
   "MARTIN VAN BUREN","WILLIAM HARRISON",
   "JOHN TYLER","JAMES POLK","ZACHARY TAYLOR","MILLARD FILLMORE","FRANKLIN PIERCE","JAMES BUCHANAN","ABRAHAM LINCOLN","ANDREW JOHNSON",
-  "ULYSSES GRANT","RUTHERFORD HAYES","JAMES GARFIELD", 
-  "CHESTER ARTHUR","GROVER CLEVELAND","BENJAMIN HARRISON","WILLIAM MCKINLEY","THEODORE ROOSEVELT","WILLIAM TAFT",
+  "ULYSSES S GRANT","RUTHERFORD B HAYES","JAMES GARFIELD", 
+  "CHESTER ARTHUR","GROVER CLEVELAND","BENJAMIN HARRISON","WILLIAM MCKINLEY","THEODORE ROOSEVELT","WILLIAM H TAFT",
   "WOODROW WILSON", "WARREN HARDING","CALVIN COOLIDGE","HERBERT HOOVER",
-  "FRANKLIN D ROOSEVELT","HARRY TRUMAN","DWIGHT EISENHOWER","JOHN F KENNEDY","LYNDON JOHNSON","RICHARD NIXON","GERALD FORD",
-  "JIMMY CARTER","RONALD REAGAN","GEORGE BUSH","BILL CLINTON","GEORGE W BUSH","BARACK OBAMA","DONALD TRUMP"],
-  // masterWordList: ["WASHINGTON","JOHN ADAMS","JEFFERSON","MADISON","MONROE","JOHN Q ADAMS","JACKSON","VAN BUREN","WILLIAM HARRISON",
-  // "TYLER","POLK","TAYLOR","FILLMORE","PIERCE","BUCHANAN","LINCOLN","ANDREW JOHNSON","GRANT","HAYES","GARFIELD", 
-  // "ARTHUR","CLEVELAND","BENJAMIN HARRISON","MCKINLEY","THEODORE ROOSEVELT","TAFT","WILSON","HARDING","COOLIDGE","HOOVER",
-  // "FRANKLIN ROOSEVELT","TRUMAN","EISENHOWER","KENNEDY","LYNDON JOHNSON","NIXON","FORD","CARTER","REAGAN","GEORGE BUSH",
-  // "CLINTON","GEORGE W BUSH","OBAMA","TRUMP"],
+  "FRANKLIN D ROOSEVELT","HARRY S TRUMAN","DWIGHT EISENHOWER","JOHN F KENNEDY","LYNDON JOHNSON","RICHARD NIXON","GERALD FORD",
+  "JIMMY CARTER","RONALD REAGAN","GEORGE H W BUSH","BILL CLINTON","GEORGE W BUSH","BARACK OBAMA","DONALD TRUMP"],
+  // this of names that dwindles down as names played
   availableWords: [],
 
-  // termList: ["32nd 1933-1937 37-41 41-45 45-45", "for nixon", "for ford"],
+  // termList: ["32nd 1933-1937 37-41 41-45 45-45", "for nixon", "for ford"], // shorter list for testing cycles
   termList: [
     "1st 1789-1793 1793-1797", "2nd 1797-1801", "3rd 1801-1805 1805-1809", "4th 1809-1813 1813-1817", "5th 1817-1821 1821-1825", 
     "6th 1825-1829", "7th 1829-1833 1833-1837", "8th 1837-1841 ", "9th 1841-1841",
@@ -121,11 +190,12 @@ var wordPool = {
     // return it to the caller
     var nextWordToPlay = this.availableWords[Math.floor(Math.random() * this.availableWords.length)];
     this.availableWords.splice(this.availableWords.indexOf(nextWordToPlay),1);
-    console.log("in wordPool.getWordFromPool word left: " + this.availableWords.length);
+    // console.log("in wordPool.getWordFromPool word left: " + this.availableWords.length);
     return nextWordToPlay;
   },
 
   // get word terms
+  // refactor point - refactor to use array of objects instead of parallel arrays
   getTermForWord(word) {
     console.log("in wordPool.getTermForWord");
     return this.termList[this.masterWordList.indexOf(word)];
@@ -140,6 +210,8 @@ var userInterface = {
   // initialize the display
   initDisplay: function() {
     console.log("in userInterface.initDisplay");
+    // turn word color to white as previous game result
+    // will have set it to red of player did not guess the word
     wordDisplayElement.style.color = "#ffffff"; 
     userInterface.displayWordElement();
     userInterface.hideTermDisplayElement();
@@ -157,6 +229,7 @@ var userInterface = {
   },
 
   // display player letter element
+  // no longer called - used during development
   displayPlayerLetterElement: function(message) {
     console.log("in userInterface.displayPlayerLetterElement"); 
     playerLetterElement.textContent = message; 
@@ -194,6 +267,8 @@ var userInterface = {
   },
 
   // show the term display
+  // this element is toggled on after word is solved then 
+  // turned off for the next word guess sequence
   showTermDisplayElement: function(word) {
     console.log("in userInterface.showTermDisplayElement"); 
     termDisplayElement.textContent = wordPool.getTermForWord(word);
@@ -251,7 +326,8 @@ var game = {
   gameWordLetterStatusArray: [],
   gameDisplayWord: "",
   usedLetters: [],
-  // there is a better way than this to check for a-z but not finding it yet
+  // there is a better way than this to check if character is a-z but using this array
+  // until code is refactored with better method
   alphaLetters: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N',
                   'O','P','Q','R','S','T','U','V','W','X','Y','Z'],
 
@@ -259,14 +335,15 @@ var game = {
   initGameWord: function() {
     console.log("game.initGameWord");
     this.gameWordString = wordPool.getWordFromPool();
+    // below statement used during development testing only
     // this.gameWordString = "GEORGE W BUSH";
     // this.gameWordString = "BENJAMIN HARRISON";
     // this.gameWordString = "FRANKLIN ROOSEVELT";
     this.gameWordArray = this.gameWordString.split('');
-    console.log("this is the game word: " + this.gameWordString);
-    this.gameWordArray.forEach(element => {
-      console.log("game word array elements: " + element);
-    });
+    // console.log("this is the game word: " + this.gameWordString);
+    // this.gameWordArray.forEach(element => {
+    //   console.log("game word array elements: " + element);
+    // });
     this.gameWordArray.forEach(element => {
       if (element === " ") {
         this.gameWordLetterStatusArray.push(" ");
@@ -276,9 +353,9 @@ var game = {
         // this.gameWordLetterStatusArray.push(element);  force the win state for testing
       }
     });
-    this.gameWordLetterStatusArray.forEach(element => {
-      console.log("game word status array elements: " + element);
-    });  
+    // this.gameWordLetterStatusArray.forEach(element => {
+    //   console.log("game word status array elements: " + element);
+    // });  
   },
   
   // get formatted game word for use on page display
@@ -306,8 +383,6 @@ var game = {
   addLetterToUsedList: function(letter) {
     console.log("in game.addLetterToUsedList"); 
     this.usedLetters.push(letter); 
-    // this is where list of letters already used will be added to 
-    // caller sends one letter to add to list
   },  
 
   // get formatted game word for use on page display
@@ -362,6 +437,7 @@ var game = {
     console.log("in game.solveWord"); 
     for (i=0; i < this.gameWordArray.length; i++) {
       this.gameWordLetterStatusArray[i] = this.gameWordArray[i];
+    // in case of loss show the solved word in Red
     wordDisplayElement.style.color = "#b22234";  
     }
     userInterface.updateGameDisplay();
@@ -375,6 +451,7 @@ var game = {
     this.guessesRemaining--;
     userInterface.updateGameDisplay();
   },  
+
 
   // determine if game is won, lost or continuing and return state to caller
   checkGameState: function() {
@@ -429,18 +506,11 @@ var game = {
   }
 };
 
-  
-
 
 // -------------------------------------------------------------------
 //  *** Start of game flow *** 
 // -------------------------------------------------------------------
 session.startSession();
-// moved to executeGameStart()
-// wordPool.initWordPool();
-// game.initGameWord();
-// userInterface.initDisplay();
-// userInterface.diagnosticDump();
 
  // Core program logic - this function is run whenever the user presses a key.
  document.onkeyup = function(event) {
@@ -452,7 +522,7 @@ session.startSession();
   // console.log("the letter pressed has a state of: " + keyPressState)
   // console.log("the letter pressed resulted in game state of: " + gameState);
   
-  if (game.gameActive) {  // this is the in active game & session branch of the mainloop
+  if (game.gameActive) {  // this is the in active game & active session branch of the mainloop
     if (keyPressState === "invalid") {
       userInterface.displayMessageElement("please press a thru z or 0 to quit.");
     };
@@ -462,7 +532,7 @@ session.startSession();
     };
 
     if (keyPressState === "quit") {
-      userInterface.displayMessageElement("quit function doesn't work yet.");
+      userInterface.displayMessageElement("quit will be availble in future versions");
     };
 
     if (keyPressState === "miss") {
@@ -491,19 +561,19 @@ session.startSession();
           // userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', you just won.");
           game.endGame(game.gameWordString,"win");
         }
-        else {
+        else { // games continues - not a win or loss yet
           // userInterface.displayMessageElement("You pressed '" + keyUserPressed + "', game goes on.");
         };
     };
   }
   else {  // this is the game over & session over branch of the mainloop
-      console.log("in game not active branch");
+      console.log("in game not active check branch");
       if (session.sessionActive) { // session is active
-        console.log("in game active branch - session is active");
+        console.log("session is active");
         if (keyUserPressed === " ") {
-          console.log("in game active branch - session is active, spacebar - check word avail");
+          console.log("session is active, spacebar - check word avail");
           if (wordPool.isWordAvailable()) {
-            console.log("in game active branch - word is available - start new game");
+            console.log("word is available - start new game");
             game.startGame();
           }
           else {
