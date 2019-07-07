@@ -49,3 +49,6 @@ mylescarey2019@gmail.com
 
 
 ## Acknowledgments
+
+Thanks to beta testers - my 15yo daughter who reminded me
+that correct word guesses do not count as misses
