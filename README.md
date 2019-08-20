@@ -9,6 +9,10 @@ The player uses key board to select letters of a hidden name. Correct selection 
 in the word.  Player losses the word if 6 misses are exhausted.  Game session continues through all 44 presidents.
 Instructions are presented in message bar at bottom of page.
 
+## Description
+
+Deployed Page: https://mylescarey2019.github.io/Word-Guess-Game/
+
 ![Presidential Name Game](assets/images/screenImage.png)
 
 ## Getting Started

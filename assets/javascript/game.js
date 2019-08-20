@@ -138,6 +138,11 @@ var session =  {
 var wordPool = {
   // refactor point:  instead of using parallel arrays need to refactor as array of objects
   // masterWordList: ["POLK","NIXON","FORD",],  // shorter list for testing cycles
+
+  // *** Need to Refactor the arrays below - they work but there are better solutions...
+  // ***    one option is to use single array with 3 values per element, ex:
+  // ***    masterWordList: [ {name: "GEORGE WASHINGTON"], available: true, term: "1st 1789-1793 1793-1797"},{etc ...} ]
+  // ***    maybe there is another option using array of objects - need to look into this
   masterWordList: ["GEORGE WASHINGTON","JOHN ADAMS","THOMAS JEFFERSON","JAMES MADISON","JAMES MONROE","JOHN QUINCY ADAMS","ANDREW JACKSON",
   "MARTIN VAN BUREN","WILLIAM HARRISON",
   "JOHN TYLER","JAMES POLK","ZACHARY TAYLOR","MILLARD FILLMORE","FRANKLIN PIERCE","JAMES BUCHANAN","ABRAHAM LINCOLN","ANDREW JOHNSON",
@@ -322,6 +327,8 @@ var game = {
   gameActive: false,
   guessesRemaining: 6,
   gameWordString: "",
+  // *** Need to Refactor - use single array with two value per element
+  // ***    for example:   gameWordArray: [ {letter: "", reveiled: false}, {etc...} ]
   gameWordArray: [],
   gameWordLetterStatusArray: [],
   gameDisplayWord: "",
