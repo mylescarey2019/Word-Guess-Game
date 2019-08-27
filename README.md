@@ -12,7 +12,8 @@ Instructions are presented in message bar at bottom of page.
 ## Deployed Page:
 https://mylescarey2019.github.io/Word-Guess-Game/
 
-![Presidential Name Game](assets/images/screenImage.png)
+## Play Example
+![Presidential Name Game](assets/images/play-example.gif)
 
 ## Getting Started
 
