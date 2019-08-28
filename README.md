@@ -6,8 +6,7 @@ Word Guess Game - Presidential Name Game
 
 This is an HTML, CSS, javascript hang-man style guessing game using the theme of the 44 US presidents.
 The player uses key board to select letters of a hidden name. Correct selection reveal the displayed letter
-in the word.  Player losses the word if 6 misses are exhausted.  Game session continues through all 44 presidents.
-Instructions are presented in message bar at bottom of page.
+in the word.  Player losses the word if 6 misses are exhausted.  Instructions and information is displayed in message bar at bottom of page.   Game session continues through all 44 presidents afterwhich the player is presented with option to play again. 
 
 ## Deployed Page:
 https://mylescarey2019.github.io/Word-Guess-Game/
@@ -39,13 +38,23 @@ https://mylescarey2019.github.io/Word-Guess-Game/
 
 page display show "chances" left - each word 
 
+
+
+##Development Notes
+
+1. teaeta
+2. akatj
+   1. kldjasg
+      1. lakdgaj
+      2. 
+
 ## Authors
 
 Myles Carey 
 mylescarey2019@gmail.com 
 
 ## Version History
- 
+
 * 0.1
     * Initial Release
 
