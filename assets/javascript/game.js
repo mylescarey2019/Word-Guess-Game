@@ -150,11 +150,11 @@ var wordPool = {
   "CHESTER ARTHUR","GROVER CLEVELAND","BENJAMIN HARRISON","WILLIAM MCKINLEY","THEODORE ROOSEVELT","WILLIAM H TAFT",
   "WOODROW WILSON", "WARREN HARDING","CALVIN COOLIDGE","HERBERT HOOVER",
   "FRANKLIN D ROOSEVELT","HARRY S TRUMAN","DWIGHT EISENHOWER","JOHN F KENNEDY","LYNDON JOHNSON","RICHARD NIXON","GERALD FORD",
-  "JIMMY CARTER","RONALD REAGAN","GEORGE H W BUSH","BILL CLINTON","GEORGE W BUSH","BARACK OBAMA","DONALD TRUMP"],
+  "JIMMY CARTER","RONALD REAGAN","GEORGE H W BUSH","BILL CLINTON","GEORGE W BUSH","BARACK OBAMA","DONALD TRUMP","JOSEPH BIDEN"],
   // this of names that dwindles down as names played
   availableWords: [],
 
-  // termList: ["32nd 1933-1937 37-41 41-45 45-45", "for nixon", "for ford"], // shorter list for testing cycles
+  // termList: ["for polk", "for nixon", "for ford"], // shorter list for testing cycles
   termList: [
     "1st 1789-1793 1793-1797", "2nd 1797-1801", "3rd 1801-1805 1805-1809", "4th 1809-1813 1813-1817", "5th 1817-1821 1821-1825", 
     "6th 1825-1829", "7th 1829-1833 1833-1837", "8th 1837-1841 ", "9th 1841-1841",
@@ -164,7 +164,7 @@ var wordPool = {
     "28th 1913-1917 1917-1921", "29th 1921-1923", "30th 1923-1925 1925-1929", "31st 1929-1933",
     "32nd 1933-1937 37-41 41-45 45-45", "33rd 1945-1949 1949-1953", "34th 1953-1957 1957-1961", "35th 1961-1963", "36th 1963-1965 1965-1969",
     "37th 1969-1973 1973-1974", "38th 1974-1977", "39th 1977-1981", "40th 1981-1985 1985-1989", "41st 1989-1993",
-    "42nd 1993-1997 1997-2001", "43rd 2001-2005 2005-2009", "44th 2009-2013 2013-2017", "45th 2017 - Currently in Office"
+    "42nd 1993-1997 1997-2001", "43rd 2001-2005 2005-2009", "44th 2009-2013 2013-2017", "45th 2017-2021", "46th 2021 - Currently in Office"
   ],
 
   // initialize the available word list from master list
@@ -180,12 +180,7 @@ var wordPool = {
   // is word available 
   isWordAvailable: function() {
     console.log("in wordPool.isWordAvailable");  
-    if (this.availableWords.length > 0) {
-      return true;
-    } 
-    else {
-      return false;
-    }
+    return this.availableWords.length > 0;
   },
 
   // get a word 
