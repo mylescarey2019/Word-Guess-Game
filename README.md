@@ -47,6 +47,8 @@ mylescarey2019@gmail.com
 
 * 0.1
     * Initial Release
+* 1.0 
+    * Added Biden
 
 ## License
 
